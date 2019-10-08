@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<header>
+	<script src='TweenLite.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<link rel="stylesheet" href="style.css">
+</header>
+
+<body>
+	<div id="radioContainer">
+		<ul>
+			<li v-for="preset in presets">
+				<input type="radio" v-model="checked" :value="preset.name">
+				<label>{{ preset.display }}</label>
+			</li>
+		</ul>
+
+		{{ checked }}
+	</div>
+	<script src="sketch.js"></script>
+</body>
+
+</html>
