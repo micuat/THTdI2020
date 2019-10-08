@@ -134,7 +134,7 @@ function Particle(p, pg) {
     let l = jsonUi.sliderValues.armLength;
     this.pos.x += this.vel.x;
     this.pos.y += this.vel.y;
-    let w = 1280, h = 720;
+    let w = 800, h = 800;
     if (this.pos.x < -this.l) this.pos.x = w + this.l;
     if (this.pos.x > w + this.l) this.pos.x = - this.l;
     if (this.pos.y < -this.l) this.pos.y = h + this.l;
@@ -162,10 +162,13 @@ function PLayer(p) {
   this.width = p.width;
   this.height = p.height;
   this.pg = p.createGraphics(this.width, this.height, p.P3D);
+  this.setup();
 }
 
 {
-  PLayer.prototype.draw = function (args) {
+  PLayer.prototype.setup = function () { }
+
+  PLayer.prototype.draw = function () {
     this.pg.beginDraw();
     this.drawLayer();
     this.pg.endDraw();
@@ -183,34 +186,24 @@ function P001(p) {
 {
   P001.prototype = Object.create(PLayer.prototype);
 
-  P001.prototype.drawLayer = function () {
+  P001.prototype.setup = function () {
     let p = this.p;
-  }
-
-  P001.prototype.constructor = P001;
-}
-
-var s = function (p) {
-  let particles = [];
-  let pg = p.createGraphics(p.width, p.height, p.P3D);
-
-  let terrain = {
-    tl: [-p.width / 2, -p.height / 2],
-    tr: [p.width / 2, -p.height / 2],
-    bl: [-p.width / 2, p.height / 2],
-    br: [p.width / 2, p.height / 2]
-  }
-  let pathfinder = new Pathfinder(p);
-
-  p.setup = function () {
-    p.frameRate(30);
-
+    this.particles = [];
+    this.terrain = {
+      tl: [-p.width / 2, -p.height / 2],
+      tr: [p.width / 2, -p.height / 2],
+      bl: [-p.width / 2, p.height / 2],
+      br: [p.width / 2, p.height / 2]
+    }
+    this.pathfinder = new Pathfinder(p);
     for (let i = 0; i < 100; i++) {
-      particles.push(new Particle(p, pg));
+      this.particles.push(new Particle(p, this.pg));
     }
   }
 
-  p.drawTerrain = function (jsonUi, t) {
+  P001.prototype.drawTerrain = function (jsonUi, t) {
+    let p = this.p;
+    let pg = this.pg;
     let terrainAlpha = 255;
     let terrainConnect = 0;
     terrainConnect = jsonUi.sliderValues.terrainAlpha;
@@ -228,10 +221,10 @@ var s = function (p) {
     for (let i = 0; i <= gridN; i++) {
       gridMatrix[i] = [];
       for (let j = 0; j <= gridN; j++) {
-        let x0 = p.lerp(terrain.tl[0], terrain.tr[0], i / gridN);
-        let y0 = p.lerp(terrain.tl[1], terrain.tr[1], i / gridN);
-        let x1 = p.lerp(terrain.bl[0], terrain.br[0], i / gridN);
-        let y1 = p.lerp(terrain.bl[1], terrain.br[1], i / gridN);
+        let x0 = p.lerp(this.terrain.tl[0], this.terrain.tr[0], i / gridN);
+        let y0 = p.lerp(this.terrain.tl[1], this.terrain.tr[1], i / gridN);
+        let x1 = p.lerp(this.terrain.bl[0], this.terrain.br[0], i / gridN);
+        let y1 = p.lerp(this.terrain.bl[1], this.terrain.br[1], i / gridN);
         let x = p.lerp(x0, x1, j / gridN);
         let y = p.lerp(y0, y1, j / gridN);
         let n = p.noise(t * 1 + y * 0.1, x * 0.1);
@@ -270,19 +263,14 @@ var s = function (p) {
     pg.popMatrix();
   }
 
-  p.draw = function () {
-    let t = p.millis() * 0.001;
+  P001.prototype.drawLayer = function () {
+    let p = this.p;
+    let pg = this.pg;
+    let t = this.t;
+    let jsonUi = this.jsonUi;
     let tw = t % 2;
     if (tw > 1) tw = 2 - tw;
 
-    let jsonUi = JSON.parse(p.jsonUiString);
-
-    if (jsonUi.sliderValues == undefined) {
-      p.background(255, 0, 0);
-      return;
-    }
-
-    pg.beginDraw();
     pg.clear();
     pg.textSize(24)
 
@@ -294,18 +282,163 @@ var s = function (p) {
 
     pg.pushMatrix();
 
-    p.drawTerrain(jsonUi, t);
+    this.drawTerrain(jsonUi, t);
 
-    pathfinder.draw(jsonUi.sliderValues.pathfinder, pg, t);
+    this.pathfinder.draw(jsonUi.sliderValues.pathfinder, pg, t);
 
     setColor(pg, 'stroke', 2);
-    for (let i = 0; i < particles.length; i++) {
-      let pt = particles[i];
+    for (let i = 0; i < this.particles.length; i++) {
+      let pt = this.particles[i];
       pt.update(jsonUi);
     }
     pg.popMatrix();
-    pg.endDraw();
-    p.image(pg, 0, 0);
+  }
+
+  P001.prototype.constructor = P001;
+}
+
+function P002(p) {
+  PLayer.call(this, p);
+}
+
+{
+  P002.prototype = Object.create(PLayer.prototype);
+
+  P002.prototype.setup = function () {
+    let p = this.p;
+    this.pg.noSmooth();
+  }
+
+  P002.prototype.drawLayer = function () {
+    let p = this.p;
+    let pg = this.pg;
+    let t = this.t;
+    let jsonUi = this.jsonUi;
+    let r = this.width * 0.5;
+    pg.background(0);
+    pg.translate(this.width / 2, this.height / 2);
+    pg.noStroke();
+    pg.fill(255);
+    pg.rectMode(p.CENTER);
+    pg.rotate(t * Math.PI * 0.1);
+    pg.rect(0, 0, r, r);
+  }
+
+  P002.prototype.constructor = P002;
+}
+
+function P003(p) {
+  PLayer.call(this, p);
+}
+
+{
+  P003.prototype = Object.create(PLayer.prototype);
+
+  P003.prototype.setup = function () {
+  }
+
+  P003.prototype.drawLayer = function () {
+    let p = this.p;
+    let pg = this.pg;
+    let t = this.t;
+    let jsonUi = this.jsonUi;
+    let r = this.width * 0.33;
+    setColor(pg, 'background', 0);
+    setColor(pg, 'stroke', 1);
+    pg.strokeWeight(this.height / 20);
+    pg.translate(this.width / 2, this.height / 2);
+    for (let i = -5; i <= 5; i++) {
+      let y = i * this.height / 10;
+      pg.line(-this.width, y, this.width, y);
+    }
+  }
+
+  P003.prototype.constructor = P003;
+}
+
+function PBlend(p) {
+  PLayer.call(this, p);
+  this.maskIntPg = p.createGraphics(this.width, this.height, p.P3D);
+}
+
+{
+  PBlend.prototype = Object.create(PLayer.prototype);
+
+  PBlend.prototype.setup = function () {
+    let p = this.p;
+    this.pg.noSmooth();
+  }
+
+  PBlend.prototype.draw = function () {
+    this.maskIntPg.beginDraw();
+    this.drawMask();
+    this.maskIntPg.endDraw();
+    this.pg.beginDraw();
+    this.drawLayer();
+    this.pg.endDraw();
+  }
+
+  PBlend.prototype.drawMask = function () {
+    let p = this.p;
+    let pg = this.maskIntPg;
+    pg.clear();
+    pg.blendMode(p.BLEND);
+    pg.image(this.frontPg, 0, 0);
+    pg.blendMode(p.MULTIPLY);
+    pg.image(this.maskPg, 0, 0);
+  }
+
+  PBlend.prototype.drawLayer = function () {
+    let p = this.p;
+    let pg = this.pg;
+    pg.clear();
+    pg.blendMode(p.BLEND);
+    pg.image(this.backPg, 0, 0);
+    pg.blendMode(p.SUBTRACT);
+    pg.image(this.maskPg, 0, 0);
+    pg.blendMode(p.ADD);
+    pg.image(this.maskIntPg, 0, 0);
+  }
+
+  PBlend.prototype.constructor = PBlend;
+}
+
+var s = function (p) {
+  let pg = p.createGraphics(p.width, p.height, p.P3D);
+  let p001 = new P001(p);
+  let p002 = new P002(p);
+  let p003 = new P003(p);
+  let pBlend001 = new PBlend(p);
+  pBlend001.frontPg = p001.pg;
+  pBlend001.backPg = p003.pg;
+  pBlend001.maskPg = p002.pg;
+
+  p.setup = function () {
+    p.frameRate(30);
+  }
+
+  p.draw = function () {
+    let jsonUi = JSON.parse(p.jsonUiString);
+
+    if (jsonUi.sliderValues == undefined) {
+      p.background(255, 0, 0);
+      return;
+    }
+
+    let t = p.millis() * 0.001;
+    p001.t = t;
+    p001.jsonUi = jsonUi;
+    p001.draw();
+    p002.t = t;
+    p002.jsonUi = jsonUi;
+    p002.draw();
+    p003.t = t;
+    p003.jsonUi = jsonUi;
+    p003.draw();
+
+    pBlend001.draw();
+    p.image(pBlend001.pg, 0, 0);
+    // p.image(p002.pg, 0, 0);
   }
 };
 
