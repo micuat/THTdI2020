@@ -11,7 +11,9 @@ const sliderProperties = {
 	terrainNoise: { min: 0, max: 100, default: 0 },
 	terrainRot: { min: 0, max: 1, default: 0 },
 	terrainAlpha: { min: 0, max: 0.5, default: 0 },
-	pathfinder: { min: 0, max: 1, default: 0 }
+	pathfinder: { min: 0, max: 1, default: 0 },
+	window: { min: 0, max: 1, default: 1 },
+	stripeWidth: { min: 0, max: 1, default: 0 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {
@@ -50,7 +52,9 @@ const presets = [
 			particleHistory: { val: 7, t: 3 },
 			terrainRot: { val: 1, t: 2 },
 			terrainAlpha: { val: 0.1, t: 2 },
-			pathfinder: { val: 0, t: 4 }
+			pathfinder: { val: 0, t: 4 },
+			window: { val: 0.5, t: 1 },
+			stripeWidth: { val: 1, t: 4 },
 		}
 	},
 	{

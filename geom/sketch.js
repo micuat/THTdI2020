@@ -314,14 +314,20 @@ function P002(p) {
     let pg = this.pg;
     let t = this.t;
     let jsonUi = this.jsonUi;
-    let r = this.width * 0.5;
+    let r = this.width * jsonUi.sliderValues.window;
     pg.background(0);
     pg.translate(this.width / 2, this.height / 2);
     pg.noStroke();
     pg.fill(255);
     pg.rectMode(p.CENTER);
-    pg.rotate(t * Math.PI * 0.1);
     pg.rect(0, 0, r, r);
+
+    pg.stroke(255);
+    pg.strokeWeight(this.height / 20);
+    for (let i = -5; i <= 5; i++) {
+      let y = i * this.height / 10;
+      pg.line(-this.width, y, this.width, y);
+    }
   }
 
   P002.prototype.constructor = P002;
@@ -342,11 +348,11 @@ function P003(p) {
     let pg = this.pg;
     let t = this.t;
     let jsonUi = this.jsonUi;
-    let r = this.width * 0.33;
-    setColor(pg, 'background', 0);
+    setColor(pg, 'background', 4);
     setColor(pg, 'stroke', 1);
-    pg.strokeWeight(this.height / 20);
+    pg.strokeWeight(this.height / 10 * jsonUi.sliderValues.stripeWidth);
     pg.translate(this.width / 2, this.height / 2);
+    pg.rotate(Math.PI * 0.25);
     for (let i = -5; i <= 5; i++) {
       let y = i * this.height / 10;
       pg.line(-this.width, y, this.width, y);
