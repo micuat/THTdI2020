@@ -43,6 +43,9 @@ WebsocketServer wsServer;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
+import processing.video.*;
+public Capture capture;
+
 public PGraphics renderPg;
 
 private static ScriptEngineManager engineManager;
@@ -75,15 +78,39 @@ public String jsonUiString = "{}";
  * init
  */
 void setup() {
-  size(800, 800, P3D);
+  //size(800, 800, P3D);
+  fullScreen(P3D, 2);
 
   renderPg = createGraphics(width, height, P3D);
 
   OscProperties op = new OscProperties();
-  op.setListeningPort(13000);
+  op.setListeningPort(8888);
   op.setDatagramSize(50000);
   oscP5 = new OscP5(this, op);  
   myRemoteLocation = new NetAddress("192.168.0.100", 13000);
+
+  String[] cameras = Capture.list();
+
+  if (cameras == null) {
+    println("Failed to retrieve the list of available cameras, will try the default...");
+    capture = new Capture(this, 640, 480);
+  } if (cameras.length == 0) {
+    println("There are no cameras available for capture.");
+    exit();
+  } else {
+    println("Available cameras:");
+    printArray(cameras);
+
+    // The camera can be initialized directly using an element
+    // from the array returned by list():
+    //capture = new Capture(this, cameras[5]);
+    capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
+    // Or, the settings can be defined based on the text in the list
+    //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
+    
+    // Start capturing the images from the camera
+    capture.start();
+  }
 
   // set the logger level to info
   httpServer.setLoggerLevel(Level.INFO);
@@ -520,11 +547,23 @@ void mousePressed(MouseEvent event) {
   }
 }
 
-void oscEvent(OscMessage theOscMessage) {
-  if (theOscMessage.checkAddrPattern("/openpose/poses")==true) {
-    if (theOscMessage.checkTypetag("s")) {
-      jsonString = theOscMessage.get(0).stringValue();
+void oscEvent(OscMessage m) {
+  if (m.checkAddrPattern("/openpose/poses")==true) {
+    if (m.checkTypetag("s")) {
+      jsonString = m.get(0).stringValue();
       return;
+    }
+  } else if (m.checkTypetag("fffffff")) {
+    try {
+      String[] ss = new String[7];
+      for(int i = 0; i < 7; i++) {
+        ss[i] = str(m.get(i).floatValue());
+      }
+      String s = "\"" + m.addrPattern() + "\"," + join(ss, ",");
+      nashorn.eval("if(globalSketch != undefined && globalSketch.motionEvent != null) globalSketch.motionEvent(" + s + ")");
+    }
+    catch (Exception e) {
+      e.printStackTrace();
     }
   }
 }

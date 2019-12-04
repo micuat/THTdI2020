@@ -1,162 +1,3 @@
-var colorSchemes = [
-  // new ColorScheme("06d6a0-f8ffe5-ef476f-1b9aaa-ffc43d"),
-  new ColorScheme("ed6a5a-f4f1bb-9bc1bc-e6ebe0-36c9c6")
-];
-function setColor(parent, func, index, alpha) {
-  if (alpha == undefined) alpha = 255;
-  parent[func](colorSchemes[0].get(index).r, colorSchemes[0].get(index).g, colorSchemes[0].get(index).b, alpha);
-}
-function Ring(x, y) {
-  this.x = x;
-  this.y = y;
-  this.count = 0;
-  this.maxCount = 30;
-  this.draw = function (pg, pathfinderDraw) {
-    let r = 10 + this.count * 0.5;
-    let alpha = pathfinderDraw * (this.maxCount - this.count) / this.maxCount;
-    setColor(pg, 'stroke', 4, alpha * 255);
-    pg.ellipse(this.x, this.y, r, r);
-    this.count++;
-    if (this.count >= this.maxCount) {
-      return true;
-    }
-    else return false;
-  }
-}
-
-function Pathfinder(p) {
-  this.x = 0;
-  this.y = 0;
-  this.target = {
-    x: 0,
-    y: 0,
-    sx: 0,
-    sy: 0,
-    rot: 0
-  }
-  this.orig = {
-    x: 0,
-    y: 0,
-    sx: 0,
-    sy: 0,
-    rot: 0
-  }
-  this.cycle = 0.5;
-  this.lastT = -100;
-  this.tick = 800 / 12;
-  this.rings = [];
-  this.draw = function (pathfinderDraw, pg, t) {
-    if (pathfinderDraw == 0) return;
-    if (Math.floor(t / this.cycle) - Math.floor(this.lastT) > 0) {
-      if (this.target.rot % 2 == 0) {
-        this.rings.push(new Ring((this.target.x + this.target.sx) * this.tick, (this.target.y + this.target.sy) * this.tick));
-        this.rings.push(new Ring((this.target.x - this.target.sx) * this.tick, (this.target.y + this.target.sy) * this.tick));
-        this.rings.push(new Ring((this.target.x - this.target.sx) * this.tick, (this.target.y - this.target.sy) * this.tick));
-        this.rings.push(new Ring((this.target.x + this.target.sx) * this.tick, (this.target.y - this.target.sy) * this.tick));
-      }
-      else {
-        this.rings.push(new Ring((this.target.x + this.target.sy) * this.tick, (this.target.y + this.target.sx) * this.tick));
-        this.rings.push(new Ring((this.target.x - this.target.sy) * this.tick, (this.target.y + this.target.sx) * this.tick));
-        this.rings.push(new Ring((this.target.x - this.target.sy) * this.tick, (this.target.y - this.target.sx) * this.tick));
-        this.rings.push(new Ring((this.target.x + this.target.sy) * this.tick, (this.target.y - this.target.sx) * this.tick));
-      }
-      this.lastT = t / this.cycle;
-      this.orig = this.target;
-      this.target = {
-        x: this.orig.x,
-        y: this.orig.y,
-        sx: this.orig.sx,
-        sy: this.orig.sy,
-        rot: this.orig.rot
-      }
-      let rand = Math.random();
-      if (rand > 0.8) {
-        this.target.x = Math.floor(p.random(-5, 6));
-      }
-      else if (rand > 0.6) {
-        this.target.y = Math.floor(p.random(-5, 6));
-      }
-      else if (rand > 0.4) {
-        this.target.sx = Math.floor(p.random(0, 4));
-      }
-      else if (rand > 0.2) {
-        this.target.sy = Math.floor(p.random(0, 4));
-      }
-      else {
-        this.target.rot = Math.floor(p.random(0, 4));
-      }
-    }
-    let tw = EasingFunctions.easeInOutCubic(t / this.cycle - this.lastT);
-    this.x = p.lerp(this.orig.x, this.target.x, tw);
-    this.y = p.lerp(this.orig.y, this.target.y, tw);
-    this.sx = p.lerp(this.orig.sx, this.target.sx, tw);
-    this.sy = p.lerp(this.orig.sy, this.target.sy, tw);
-    this.rot = p.lerp(this.orig.rot, this.target.rot, tw);
-    let r = 10;
-    pg.pushStyle();
-    pg.pushMatrix();
-    pg.translate(pg.width / 2, pg.height / 2);
-
-    for (let i = this.rings.length - 1; i >= 0; i--) {
-      if (this.rings[i].draw(pg, pathfinderDraw)) {
-        this.rings.splice(i, 1);
-      }
-    }
-
-    setColor(pg, 'fill', 4, pathfinderDraw * 255);
-    pg.noStroke();
-    pg.translate(this.x * this.tick, this.y * this.tick);
-    pg.rotate(this.rot * Math.PI * 0.5);
-    pg.ellipse((+this.sx) * this.tick, (+this.sy) * this.tick, r, r);
-    pg.ellipse((-this.sx) * this.tick, (+this.sy) * this.tick, r, r);
-    pg.ellipse((-this.sx) * this.tick, (-this.sy) * this.tick, r, r);
-    pg.ellipse((+this.sx) * this.tick, (-this.sy) * this.tick, r, r);
-
-    setColor(pg, 'stroke', 4, pathfinderDraw * 255);
-    pg.noFill();
-    pg.rect(-this.sx * this.tick, -this.sy * this.tick, this.sx * 2 * this.tick, this.sy * 2 * this.tick);
-    pg.popMatrix();
-    pg.popStyle();
-  }
-}
-
-function Particle(p, pg) {
-  this.pos = { x: Math.random() * pg.width, y: Math.random() * pg.height };
-  let v = p5.Vector.random2D();
-  // this.vel = {x: -5, y: 5};
-  this.z = p.random(0.5, 3);
-  this.vel = { x: 5 / this.z * v.x, y: 5 / this.z * v.y };
-  this.rot = 0;
-  this.rVel = (Math.random() - 0.5) * 0.3;
-  this.l = 200 / this.z;
-  this.history = [];
-  this.update = function (jsonUi) {
-    let l = jsonUi.sliderValues.armLength;
-    this.pos.x += this.vel.x;
-    this.pos.y += this.vel.y;
-    let w = 800, h = 800;
-    if (this.pos.x < -this.l) this.pos.x = w + this.l;
-    if (this.pos.x > w + this.l) this.pos.x = - this.l;
-    if (this.pos.y < -this.l) this.pos.y = h + this.l;
-    if (this.pos.y > h + this.l) this.pos.y = - this.l;
-    this.rot += this.rVel;
-    let dx = Math.cos(this.rot);
-    let dy = Math.sin(this.rot);
-    this.x0 = this.pos.x + dx * -this.l * 0.5 * l;
-    this.y0 = this.pos.y + dy * -this.l * 0.5 * l;
-    this.x1 = this.pos.x + dx * this.l * 0.5 * l;
-    this.y1 = this.pos.y + dy * this.l * 0.5 * l;
-
-
-    this.history.push({ x0: this.x0, y0: this.y0, x1: this.x1, y1: this.y1 });
-    if (this.history.length > jsonUi.sliderValues.particleHistory) this.history.shift();
-    for (let i = 0; i < this.history.length; i++) {
-      let h = this.history[i];
-      pg.line(h.x0, h.y0, h.x1, h.y1);
-    }
-  }
-}
-
 function PLayer(p) {
   this.p = p;
   this.width = p.width;
@@ -196,7 +37,7 @@ function P001(p) {
       br: [p.width / 2, p.height / 2]
     }
     this.pathfinder = new Pathfinder(p);
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
       this.particles.push(new Particle(p, this.pg));
     }
   }
@@ -297,71 +138,6 @@ function P001(p) {
   P001.prototype.constructor = P001;
 }
 
-function P002(p) {
-  PLayer.call(this, p);
-}
-
-{
-  P002.prototype = Object.create(PLayer.prototype);
-
-  P002.prototype.setup = function () {
-    let p = this.p;
-    this.pg.noSmooth();
-  }
-
-  P002.prototype.drawLayer = function () {
-    let p = this.p;
-    let pg = this.pg;
-    let t = this.t;
-    let jsonUi = this.jsonUi;
-    let r = this.width * jsonUi.sliderValues.window;
-    pg.background(0);
-    pg.translate(this.width / 2, this.height / 2);
-    pg.noStroke();
-    pg.fill(255);
-    pg.rectMode(p.CENTER);
-    pg.rect(0, 0, r, r);
-
-    pg.stroke(255);
-    pg.strokeWeight(this.height / 20);
-    for (let i = -5; i <= 5; i++) {
-      let y = i * this.height / 10;
-      pg.line(-this.width, y, this.width, y);
-    }
-  }
-
-  P002.prototype.constructor = P002;
-}
-
-function P003(p) {
-  PLayer.call(this, p);
-}
-
-{
-  P003.prototype = Object.create(PLayer.prototype);
-
-  P003.prototype.setup = function () {
-  }
-
-  P003.prototype.drawLayer = function () {
-    let p = this.p;
-    let pg = this.pg;
-    let t = this.t;
-    let jsonUi = this.jsonUi;
-    setColor(pg, 'background', 4);
-    setColor(pg, 'stroke', 1);
-    pg.strokeWeight(this.height / 10 * jsonUi.sliderValues.stripeWidth);
-    pg.translate(this.width / 2, this.height / 2);
-    pg.rotate(Math.PI * 0.25);
-    for (let i = -5; i <= 5; i++) {
-      let y = i * this.height / 10;
-      pg.line(-this.width, y, this.width, y);
-    }
-  }
-
-  P003.prototype.constructor = P003;
-}
-
 function PBlend(p) {
   PLayer.call(this, p);
   this.maskIntPg = p.createGraphics(this.width, this.height, p.P3D);
@@ -409,42 +185,76 @@ function PBlend(p) {
   PBlend.prototype.constructor = PBlend;
 }
 
+if (pgs == undefined) {
+  var pgs = [];
+}
 var s = function (p) {
-  let pg = p.createGraphics(p.width, p.height, p.P3D);
-  let p001 = new P001(p);
-  let p002 = new P002(p);
-  let p003 = new P003(p);
-  let pBlend001 = new PBlend(p);
-  pBlend001.frontPg = p001.pg;
-  pBlend001.backPg = p003.pg;
-  pBlend001.maskPg = p002.pg;
+  let index = 0;
+  // let p001 = new P001(p);
+  let width = 1280;
+  let height = 720;
+  let lastT = 0;
 
   p.setup = function () {
     p.frameRate(30);
+    if (pgs.length == 0) {
+      for (let i = 0; i < 60; i++) {
+        pgs.push(p.createGraphics(width, height, p.P3D));
+        // pgs[i].beginDraw();
+        // pgs[i].background(0);
+        // pgs[i].endDraw();
+      }
+    }
   }
 
   p.draw = function () {
     let jsonUi = JSON.parse(p.jsonUiString);
 
     if (jsonUi.sliderValues == undefined) {
-      p.background(255, 0, 0);
-      return;
+      // p.background(255, 0, 0);
+      // return;
     }
 
     let t = p.millis() * 0.001;
-    p001.t = t;
-    p001.jsonUi = jsonUi;
-    p001.draw();
-    p002.t = t;
-    p002.jsonUi = jsonUi;
-    p002.draw();
-    p003.t = t;
-    p003.jsonUi = jsonUi;
-    p003.draw();
+    // p001.t = t;
+    // p001.jsonUi = jsonUi;
+    // p001.draw();
 
-    pBlend001.draw();
-    p.image(pBlend001.pg, 0, 0);
-    // p.image(p002.pg, 0, 0);
+    // p.image(pBlend001.pg, 0, 0);
+    p.background(0, 0, 0);
+    if (p.capture.available() == true) {
+      p.capture.read();
+    }
+    let pg = pgs[index];
+    pg.beginDraw();
+    pg.image(p.capture, 0, 0, width, height);
+    pg.endDraw();
+
+    // p.image(p.random(pgs), 0, 0, p.width, p.height);
+    let sc = 2;
+    p.translate(width*sc/2, height*sc/2);
+    p.scale(-1, 1);
+    p.translate(-width*sc/2, -height*sc/2);
+    p.image(p.capture, 200, 900, width * sc, height * sc);
+    // p.image(p.random(pgs), 200, 700, width * 1.5, height * 1.5);
+    // p.image(pgs[(index + 30) % pgs.length], 0, 0);
+
+    index = (index + 1) % pgs.length;
+
+    // p.fill(255, 0, 0);
+    // p.rect(0, 0, p.width, p.height)
+    p.fill(255);
+
+    // p.image(p.capture, 0, 0, width, height);
+    p.stroke(255);
+    // p.line(p.mouseX, p.mouseY, width, height);
+
+    if (Math.floor(t) - Math.floor(lastT) > 0) {
+      print(p.frameRate());
+    }
+    lastT = t;
+
+    // p.background(0)
   }
 };
 
