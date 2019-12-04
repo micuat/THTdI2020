@@ -198,7 +198,7 @@ var s = function (p) {
   p.setup = function () {
     p.createCanvas(1600, 800)
     p.frameRate(30);
-    let length = 600;
+    let length = 30//0;
     if (pgs.length != length) {
       pgs = [];
       for (let i = 0; i < length; i++) {
@@ -231,7 +231,7 @@ var s = function (p) {
     let pg = pgs[index];
     // if(rewrite) {
     pg.beginDraw();
-    //pg.image(p.capture, 0, 0, width, height);
+    pg.image(p.capture, 0, 0, width, height);
     pg.endDraw();
     // }
 

@@ -36,6 +36,10 @@ import websockets.*;
 import oscP5.*;
 import netP5.*;
 
+import spout.*;
+
+Spout spout;
+
 SimpleHTTPServer httpServer;
 
 WebsocketServer wsServer;
@@ -88,6 +92,9 @@ void setup() {
   op.setDatagramSize(50000);
   oscP5 = new OscP5(this, op);  
   myRemoteLocation = new NetAddress("192.168.0.100", 13000);
+
+  spout = new Spout(this);
+  spout.createSender("Videolooper");
 
   String[] cameras = Capture.list();
 
@@ -308,6 +315,8 @@ void draw() {
   catch (Exception e) {
     e.printStackTrace();
   }
+  
+  spout.sendTexture();
 }
 
 private static byte[] encoded;
