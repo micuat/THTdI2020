@@ -78,8 +78,8 @@ public String jsonUiString = "{}";
  * init
  */
 void setup() {
-  //size(800, 800, P3D);
-  fullScreen(P3D, 2);
+  size(800, 800, P3D);
+  //fullScreen(P3D, 2);
 
   renderPg = createGraphics(width, height, P3D);
 
@@ -103,8 +103,8 @@ void setup() {
 
     // The camera can be initialized directly using an element
     // from the array returned by list():
-    //capture = new Capture(this, cameras[5]);
-    capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
+    capture = new Capture(this, cameras[1]);
+    //capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
     // Or, the settings can be defined based on the text in the list
     //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
     

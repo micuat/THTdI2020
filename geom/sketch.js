@@ -191,22 +191,29 @@ if (pgs == undefined) {
 var s = function (p) {
   let index = 0;
   // let p001 = new P001(p);
-  let width = 1280;
-  let height = 720;
+  let width = 640//1280;
+  let height = 480//720;
   let lastT = 0;
 
   p.setup = function () {
+    p.createCanvas(1600, 800)
     p.frameRate(30);
-    if (pgs.length == 0) {
-      for (let i = 0; i < 60; i++) {
+    let length = 600;
+    if (pgs.length != length) {
+      pgs = [];
+      for (let i = 0; i < length; i++) {
         pgs.push(p.createGraphics(width, height, p.P3D));
-        // pgs[i].beginDraw();
-        // pgs[i].background(0);
-        // pgs[i].endDraw();
+        pgs[i].beginDraw();
+        pgs[i].background(0,255,255);
+        pgs[i].endDraw();
       }
     }
   }
-
+  let jump = 0;
+  let jumpTarget = 0;
+  let jumpLast = 0;
+  let rewrite = true;
+  let count = 0;
   p.draw = function () {
     let jsonUi = JSON.parse(p.jsonUiString);
 
@@ -216,45 +223,79 @@ var s = function (p) {
     }
 
     let t = p.millis() * 0.001;
-    // p001.t = t;
-    // p001.jsonUi = jsonUi;
-    // p001.draw();
 
-    // p.image(pBlend001.pg, 0, 0);
-    p.background(0, 0, 0);
+    // p.background(0, 0, 0);
     if (p.capture.available() == true) {
       p.capture.read();
     }
     let pg = pgs[index];
+    // if(rewrite) {
     pg.beginDraw();
-    pg.image(p.capture, 0, 0, width, height);
+    //pg.image(p.capture, 0, 0, width, height);
     pg.endDraw();
+    // }
 
-    // p.image(p.random(pgs), 0, 0, p.width, p.height);
-    let sc = 2;
-    p.translate(width*sc/2, height*sc/2);
-    p.scale(-1, 1);
-    p.translate(-width*sc/2, -height*sc/2);
-    p.image(p.capture, 200, 900, width * sc, height * sc);
+    // let sc = 2;
+    // p.translate(width*sc/2, height*sc/2);
+    // p.scale(-1, 1);
+    // p.translate(-width*sc/2, -height*sc/2);
+    // p.background(0)
+    // p.image(pg, 0, 0)
+    // p.image(p.capture, 200, 900, width * sc, height * sc);
     // p.image(p.random(pgs), 200, 700, width * 1.5, height * 1.5);
-    // p.image(pgs[(index + 30) % pgs.length], 0, 0);
 
-    index = (index + 1) % pgs.length;
+    // noise
+    // p.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
 
-    // p.fill(255, 0, 0);
-    // p.rect(0, 0, p.width, p.height)
-    p.fill(255);
+    // jump
+    jump += 1;
+    if(jump > 1 ) jump = 1;
+    let J = Math.floor(p.lerp(jumpLast, jumpTarget, jump))
+    p.blendMode(p.BLEND);
+    // p.tint(10, 255)
+    // p.tint(255, p.map(p.mouseX, 0, p.width, 255, 0));
+    // p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
 
-    // p.image(p.capture, 0, 0, width, height);
-    p.stroke(255);
-    // p.line(p.mouseX, p.mouseY, width, height);
+    p.background(255)
+    for(let i = 0; i < 2; i++) {
+      p.pushMatrix()
+      if(i==0) {
+      p.translate(pg.width/2, pg.height/2);
+      p.scale(4, 4);
+      p.translate(-pg.width/2, -pg.height/2);
+      p.translate(0,100)
+      p.blendMode(p.MULTIPLY)
+      }
+      else {
+        p.translate(200, 0)
 
-    if (Math.floor(t) - Math.floor(lastT) > 0) {
+      p.blendMode(p.BLEND)
+      }
+      // p.tint(255)
+      p.tint(255, p.map(p.mouseX, 0, p.width, 255, 0));
+      p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+      p.image(pgs[(index + pgs.length + J*2) % pgs.length], 0, 0);
+      // p.image(pgs[(index + pgs.length + J*3) % pgs.length], 0, 0);
+      // p.image(pgs[(index + pgs.length + J*4) % pgs.length], 0, 0);
+
+      // normal
+      // p.image(pgs[(index + pgs.length - 30 * 5) % pgs.length], 0, 0);
+      p.popMatrix()
+    }
+    count = 0//(count + 1) % 2;
+    if(count == 0)
+      index = (index + 1) % pgs.length;
+
+    let T = 5;
+    if (Math.floor(t/T) - Math.floor(lastT/T) > 0) {
       print(p.frameRate());
+      jumpLast = jumpTarget;
+      jumpTarget = Math.floor(p.random(pgs.length))
+      jump = 0;
+      // rewrite = true;//Math.random() > 0.5;
+      // index = (index + 1) % pgs.length;
     }
     lastT = t;
-
-    // p.background(0)
   }
 };
 
