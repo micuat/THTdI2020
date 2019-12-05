@@ -1,19 +1,8 @@
 let ws = new WebSocket('ws://localhost:8035/staebe');
 
 const sliderProperties = {
-	armLength: { min: 0, max: 5, default: 0 },
-	legLength: { min: 0, max: 5, default: 0 },
-	spineLength: { min: 0, max: 5, default: 0 },
-	audioReactive: { min: 0, max: 1, default: 0 },
-	background: { min: 0, max: 255, default: 255 }, // alpha
-	wander: { min: 0, max: 1, default: 0 },
-	particleHistory: { min: 1, max: 10, default: 1 },
-	terrainNoise: { min: 0, max: 100, default: 0 },
-	terrainRot: { min: 0, max: 1, default: 0 },
-	terrainAlpha: { min: 0, max: 0.5, default: 0 },
-	pathfinder: { min: 0, max: 1, default: 0 },
-	window: { min: 0, max: 1, default: 1 },
-	stripeWidth: { min: 0, max: 1, default: 0 },
+	background: { min: 0, max: 255, default: 255 },
+	debugNumbers: { min: 0, max: 1.9999, default: 1 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {
@@ -30,64 +19,8 @@ const presets = [
 		display: 'Grid',
 		sliders: {
 			background: { val: 255, t: 1 },
-			terrainAlpha: { val: 0.1, t: 1 }
 		}
 	},
-	{
-		name: 'pfOnGrid',
-		display: 'Pathfinder on Grid',
-		sliders: {
-			background: { val: 255, t: 1 },
-			terrainAlpha: { val: 0.1, t: 1 },
-			pathfinder: { val: 1, t: 1 }
-		}
-	},
-	{
-		name: 'wandering',
-		display: 'Wandering',
-		sliders: {
-			armLength: { val: 0.5, t: 3 },
-			background: { val: 255, t: 1 },
-			wander: { val: 1, t: 1, ease: Power0.easeInOut },
-			particleHistory: { val: 7, t: 3 },
-			terrainRot: { val: 1, t: 2 },
-			terrainAlpha: { val: 0.1, t: 2 },
-			pathfinder: { val: 0, t: 4 },
-			window: { val: 0.5, t: 1 },
-			stripeWidth: { val: 1, t: 4 },
-		}
-	},
-	{
-		name: 'armOnBlack',
-		display: 'Arm on Black',
-		sliders: {
-			armLength: { val: 2.5, t: 3 },
-			background: { val: 255, t: 3 },
-			wander: { val: 0, t: 4, ease: Power0.easeInOut },
-			terrainRot: { val: 1, t: 3 }
-		}
-	},
-	{
-		name: 'bodyOnVideo',
-		display: 'Arm on Video',
-		sliders: {
-			armLength: { val: 2.5, t: 8 },
-			legLength: { val: 2, t: 8 },
-			background: { val: 0, t: 8 },
-		}
-	},
-	// {
-	// 	name: 'all',
-	// 	display: 'All',
-	// 	sliders: { ...sliderValues, ...{ armLength: 500, legLength: 200, spineLength: 200 } },
-	// 	duration: 1
-	// },
-	// {
-	// 	name: 'keith',
-	// 	display: 'Keith',
-	// 	sliders: { ...sliderValues, ...{ armLength: 0, legLength: 20, spineLength: 300, background: 1000 } },
-	// 	duration: 1
-	// }
 ];
 
 var gui = new dat.gui.GUI();
