@@ -33,7 +33,12 @@ var s = function (p) {
     if (jsonUi.sliderValues == undefined) {
       jsonUi.sliderValues = {
         background: 0,
-        debugNumbers: 0
+        delayFrame: 0,
+        debugNumbers: 0,
+        frameMode: 0,
+        blendTint: 0.3,
+        blendMode: 0,
+        jumpRate: 0.1
       }
     }
 
@@ -52,52 +57,73 @@ var s = function (p) {
     else {
       pg.translate(pg.width / 2, pg.height / 2);
       pg.textFont(font);
-      pg.text(("     " + index).slice(-2), -64, 0);
+      let x = p.map(Math.floor(index / 10) * 10, 0, pgs.length, -200, 200);
+      pg.text(("     " + index).slice(-2), x - 64, 0);
     }
     pg.endDraw();
 
     p.background(jsonUi.sliderValues.background);
-
-    // let sc = 2;
-    // p.translate(width*sc/2, height*sc/2);
-    // p.scale(-1, 1);
-    // p.translate(-width*sc/2, -height*sc/2);
-    // p.background(0)
-    // p.image(pg, 0, 0)
-    // p.image(p.capture, 200, 900, width * sc, height * sc);
-    // p.image(p.random(pgs), 200, 700, width * 1.5, height * 1.5);
-
-    // noise
-    // p.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
-
-    // jump
-    jump += 1;
-    if (jump > 1) jump = 1;
-    let J = Math.floor(p.lerp(jumpLast, jumpTarget, jump))
     p.blendMode(p.BLEND);
-    // p.tint(10, 255)
-    // p.tint(255, p.map(p.mouseX, 0, p.width, 255, 0));
-    // p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+    p.background(0);
 
-    p.background(255);
-    p.pushMatrix();
-    p.translate(pg.width / 2, pg.height / 2);
-    // p.scale(4, 4);
-    p.translate(-pg.width / 2, -pg.height / 2);
-    p.translate(0, 100)
-    p.blendMode(p.BLEND)
+    let frameMode = Math.floor(jsonUi.sliderValues.frameMode + 0.5);
+    let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
+    jump += jsonUi.sliderValues.jumpRate;
+    let J = Math.floor(p.lerp(jumpLast, jumpTarget, jump));
+    if (isNaN(J) || J < 0) J = 0;
+    p.push();
+    switch (frameMode) {
+      case 0:
+        // real-time
+        p.image(pg, 0, 0);
+        break;
 
-    // p.tint(255)
-    p.tint(255, p.map(p.mouseX, 0, p.width, 255, 0));
-    p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-    p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
-    // p.image(pgs[(index + pgs.length + J*3) % pgs.length], 0, 0);
-    // p.image(pgs[(index + pgs.length + J*4) % pgs.length], 0, 0);
+      case 1:
+        // delay
+        p.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
+        break;
 
-    // normal
-    let delay = 10//30 * 5;
-    p.image(pgs[(index + pgs.length - 10) % pgs.length], 0, 0);
-    p.popMatrix()
+      case 2:
+        // random
+        p.image(p.random(pgs), 0, 0);
+        break;
+
+      case 3:
+        // noise
+        p.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
+        break;
+
+      case 4:
+        // jump
+        if (jump > 1) jump = 1;
+        if (jsonUi.sliderValues.blendMode == 0) {
+          p.tint(255, jsonUi.sliderValues.blendTint * 255);
+          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+        }
+        else {
+          p.blendMode(p.LIGHTEST);
+          p.tint(255, jsonUi.sliderValues.blendTint * 255);
+          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.blendMode(p.BLEND);
+        }
+        break;
+
+      case 5:
+        // blend two
+        if (jsonUi.sliderValues.blendMode == 0) {
+          p.tint(255, jsonUi.sliderValues.blendTint * 128);
+          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
+        }
+        else {
+          p.tint(255);
+          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.blendMode(p.LIGHTEST);
+          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.blendMode(p.BLEND);
+        }
+    }
+    p.pop();
 
     index = (index + 1) % pgs.length;
 

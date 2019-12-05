@@ -2,7 +2,12 @@ let ws = new WebSocket('ws://localhost:8035/staebe');
 
 const sliderProperties = {
 	background: { min: 0, max: 255, default: 255 },
-	debugNumbers: { min: 0, max: 1.9999, default: 1 },
+	delayFrame: { min: 0, max: 150, default: 0 },
+	debugNumbers: { min: 0, max: 1.4999, default: 1 },
+	frameMode: { min: 0, max: 5.4999, default: 0 },
+	blendTint: { min: 0, max: 1, default: 0.3 },
+	blendMode: { min: 0, max: 1.4999, default: 0 },
+	jumpRate: { min: 0, max: 1, default: 0.1 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {
