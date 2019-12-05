@@ -1,30 +1,11 @@
-/**
- * This is a simple example of how to use the Keystone library.
- *
- * To use this example in the real world, you need a projector
- * and a surface you want to project your Processing sketch onto.
- *
- * Simply drag the corners of the CornerPinSurface so that they
- * match the physical surface's corners. The result will be an
- * undistorted projection, regardless of projector position or 
- * orientation.
- *
- * You can also create more than one Surface object, and project
- * onto multiple flat surfaces using a single projector.
- *
- * This extra flexbility can comes at the sacrifice of more or 
- * less pixel resolution, depending on your projector and how
- * many surfaces you want to map. 
- */
-// IMPORT THE SPOUT LIBRARY
 import spout.*;
 Spout spout;
 PGraphics pgr; // Canvas to receive a texture
 
 import deadpixel.keystone.*;
 
-Keystone ks;
-CornerPinSurface surface;
+Keystone[] keystones = new Keystone[2];
+CornerPinSurface[] surfaces = new CornerPinSurface[2];
 
 PGraphics offscreen;
 
@@ -33,59 +14,48 @@ void setup() {
   // since it relies on texture mapping to deform
   size(800, 600, P3D);
 
-  ks = new Keystone(this);
-  surface = ks.createCornerPinSurface(400, 300, 20);
-  
-  // We need an offscreen buffer to draw the surface we
-  // want projected
-  // note that we're matching the resolution of the
-  // CornerPinSurface.
-  // (The offscreen buffer can be P2D or P3D)
+  for(int i = 0; i < keystones.length; i++) {
+    keystones[i] = new Keystone(this);
+    surfaces[i] = keystones[i].createCornerPinSurface(200, 150, 20);
+  }
+
   offscreen = createGraphics(400, 300, P3D);
   spout = new Spout(this);
   pgr = createGraphics(width, height, PConstants.P2D);
 }
 
 void draw() {
-   pgr = spout.receiveTexture(pgr);
+  pgr = spout.receiveTexture(pgr);
 
-  // Convert the mouse coordinate into surface coordinates
-  // this will allow you to use mouse events inside the 
-  // surface from your screen. 
-  PVector surfaceMouse = surface.getTransformedMouse();
-
-  // Draw the scene, offscreen
   offscreen.beginDraw();
-  //offscreen.background(255);
-  //offscreen.fill(0, 255, 0);
-  //offscreen.ellipse(surfaceMouse.x, surfaceMouse.y, 75, 75);
   offscreen.image(pgr, 0, 0, offscreen.width, offscreen.height);
   offscreen.endDraw();
 
-  // most likely, you'll want a black background to minimize
-  // bleeding around your projection area
   background(0);
- 
-  // render the scene, transformed using the corner pin surface
-  surface.render(offscreen);
+
+  for(int i = 0; i < surfaces.length; i++) {
+    surfaces[i].render(offscreen);
+  }
 }
 
 void keyPressed() {
   switch(key) {
-  case 'c':
-    // enter/leave calibration mode, where surfaces can be warped 
-    // and moved
-    ks.toggleCalibration();
+  case '1':
+    keystones[0].toggleCalibration();
+    break;
+
+  case '2':
+    keystones[1].toggleCalibration();
     break;
 
   case 'l':
     // loads the saved layout
-    ks.load();
+    keystones[0].load();
     break;
 
   case 's':
     // saves the layout
-    ks.save();
+    keystones[0].save();
     break;
   }
 }
