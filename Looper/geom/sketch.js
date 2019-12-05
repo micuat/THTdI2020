@@ -14,20 +14,23 @@ var s = function (p) {
   p.setup = function () {
     p.createCanvas(1600, 800)
     p.frameRate(30);
+    p.background(0);
+
+    let length = 60//0;
+    if (pgs.length != length) {
+      pgs = [];
+      for (let i = 0; i < length; i++) {
+        pgs.push(p.createGraphics(width, height, p.P3D));
+        // pgs[i].beginDraw();
+        // pgs[i].background(0, 255, 255);
+        // pgs[i].endDraw();
+      }
+    }
+
     let self = this;
     var Thread = Java.type('java.lang.Thread');
     new Thread(function () {
       font = p.createFont('Verdana', 128);
-      let length = 30//0;
-      if (pgs.length != length) {
-        pgs = [];
-        for (let i = 0; i < length; i++) {
-          pgs.push(p.createGraphics(width, height, p.P3D));
-          pgs[i].beginDraw();
-          pgs[i].background(0, 255, 255);
-          pgs[i].endDraw();
-        }
-      }
       setupDone = true;
     }).start();
   }
@@ -71,9 +74,8 @@ var s = function (p) {
     }
     pg.endDraw();
 
-    p.background(jsonUi.sliderValues.background);
+    // p.background(jsonUi.sliderValues.background);
     p.blendMode(p.BLEND);
-    p.background(0);
 
     let frameMode = Math.floor(jsonUi.sliderValues.frameMode + 0.5);
     let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
@@ -105,30 +107,23 @@ var s = function (p) {
       case 4:
         // jump
         if (jump > 1) jump = 1;
-        if (jsonUi.sliderValues.blendMode == 0) {
-          p.tint(255, jsonUi.sliderValues.blendTint * 255);
-          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-        }
-        else {
-          p.blendMode(p.LIGHTEST);
-          p.tint(255, jsonUi.sliderValues.blendTint * 255);
-          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          p.blendMode(p.BLEND);
-        }
+        p.tint(255, jsonUi.sliderValues.blendTint * 255);
+        p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
         break;
 
       case 5:
         // blend two
-        if (jsonUi.sliderValues.blendMode == 0) {
+        if (Math.floor(jsonUi.sliderValues.blendMode + 0.5) == 0) {
           p.tint(255, jsonUi.sliderValues.blendTint * 128);
           p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
           p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
         }
         else {
           p.tint(255);
-          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.background(0);
           p.blendMode(p.LIGHTEST);
           p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
           p.blendMode(p.BLEND);
         }
     }
