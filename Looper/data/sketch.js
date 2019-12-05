@@ -8,6 +8,7 @@ const sliderProperties = {
 	blendTint: { min: 0, max: 1, default: 0.3 },
 	blendMode: { min: 0, max: 1.4999, default: 0 },
 	jumpRate: { min: 0, max: 1, default: 0.1 },
+	tUpdate: { min: 1, max: 20, default: 5 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {

@@ -38,7 +38,8 @@ var s = function (p) {
         frameMode: 0,
         blendTint: 0.3,
         blendMode: 0,
-        jumpRate: 0.1
+        jumpRate: 0.1,
+        tUpdate: 5
       }
     }
 
@@ -127,7 +128,7 @@ var s = function (p) {
 
     index = (index + 1) % pgs.length;
 
-    let T = 5;
+    let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
       print(p.frameRate());
       jumpLast = jumpTarget;
