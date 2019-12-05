@@ -9,25 +9,33 @@ var s = function (p) {
 
   let font;
 
+  let setupDone = false;
+
   p.setup = function () {
     p.createCanvas(1600, 800)
     p.frameRate(30);
-    font = p.createFont('Verdana', 128);
-    let length = 30//0;
-    if (pgs.length != length) {
-      pgs = [];
-      for (let i = 0; i < length; i++) {
-        pgs.push(p.createGraphics(width, height, p.P3D));
-        pgs[i].beginDraw();
-        pgs[i].background(0, 255, 255);
-        pgs[i].endDraw();
+    let self = this;
+    var Thread = Java.type('java.lang.Thread');
+    new Thread(function () {
+      font = p.createFont('Verdana', 128);
+      let length = 30//0;
+      if (pgs.length != length) {
+        pgs = [];
+        for (let i = 0; i < length; i++) {
+          pgs.push(p.createGraphics(width, height, p.P3D));
+          pgs[i].beginDraw();
+          pgs[i].background(0, 255, 255);
+          pgs[i].endDraw();
+        }
       }
-    }
+      setupDone = true;
+    }).start();
   }
   let jump = 0;
   let jumpTarget = 0;
   let jumpLast = 0;
   p.draw = function () {
+    if (setupDone == false) return;
     let jsonUi = JSON.parse(p.jsonUiString);
 
     if (jsonUi.sliderValues == undefined) {
