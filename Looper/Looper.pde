@@ -82,7 +82,7 @@ public String jsonUiString = "{}";
  * init
  */
 void setup() {
-  size(800, 800, P3D);
+  size(640, 480, P3D);
   //fullScreen(P3D, 2);
 
   renderPg = createGraphics(width, height, P3D);
