@@ -3,10 +3,10 @@ let ws = new WebSocket('ws://localhost:8035/staebe');
 const sliderProperties = {
 	background: { min: 0, max: 255, default: 255 },
 	delayFrame: { min: 0, max: 150, default: 0 },
-	debugNumbers: { min: 0, max: 1.4999, default: 1 },
-	frameMode: { min: 0, max: 5.4999, default: 0 },
+	debugMode: { radio: ['showVideo', 'showDigits'], default: 'showVideo' },
+	frameMode: { radio: ['normal', 'delay', 'random', 'noise', 'jump', 'blendtwo'], default: 'normal' },
 	blendTint: { min: 0, max: 1, default: 0.3 },
-	blendMode: { min: 0, max: 1.4999, default: 0 },
+	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'blend' },
 	jumpRate: { min: 0, max: 1, default: 0.1 },
 	tUpdate: { min: 1, max: 20, default: 5 },
 };
@@ -31,14 +31,24 @@ const presets = [
 
 var gui = new dat.gui.GUI();
 gui.remember(sliderValues);
-for (let key of Object.keys(sliderValues))
-	gui.add(sliderValues, key).min(sliderProperties[key].min).max(sliderProperties[key].max).listen().onChange(function (value) {
-		let params = { sliderValues };
-		if (ws.readyState == WebSocket.OPEN) {
-			ws.send(JSON.stringify(params));
-		}
-	});
-
+for (let key of Object.keys(sliderValues)) {
+	if (sliderProperties[key].min != undefined && sliderProperties[key].min != undefined) {
+		gui.add(sliderValues, key).min(sliderProperties[key].min).max(sliderProperties[key].max).listen().onChange(function (value) {
+			let params = { sliderValues };
+			if (ws.readyState == WebSocket.OPEN) {
+				ws.send(JSON.stringify(params));
+			}
+		});
+	}
+	else if (sliderProperties[key].radio != undefined) {
+		gui.add(sliderValues, key, sliderProperties[key].radio).listen().onChange(function (value) {
+			let params = { sliderValues };
+			if (ws.readyState == WebSocket.OPEN) {
+				ws.send(JSON.stringify(params));
+			}
+		});
+	}
+}
 new Vue({
 	el: '#radioContainer',
 	data: {

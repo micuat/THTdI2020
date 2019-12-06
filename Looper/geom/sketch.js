@@ -45,10 +45,10 @@ var s = function (p) {
       jsonUi.sliderValues = {
         background: 0,
         delayFrame: 0,
-        debugNumbers: 0,
-        frameMode: 0,
+        debugMode: 'showVideo',
+        frameMode: 'normal',
         blendTint: 0.3,
-        blendMode: 0,
+        blendMode: 'blend',
         jumpRate: 0.1,
         tUpdate: 5
       }
@@ -63,7 +63,7 @@ var s = function (p) {
     pg.beginDraw();
     pg.blendMode(p.BLEND);
     pg.background(0);
-    if (jsonUi.sliderValues.debugNumbers < 1) {
+    if (jsonUi.sliderValues.debugMode == 'showVideo') {
       pg.image(p.capture, 0, 0, width, height);
     }
     else {
@@ -77,55 +77,66 @@ var s = function (p) {
     // p.background(jsonUi.sliderValues.background);
     p.blendMode(p.BLEND);
 
-    let frameMode = Math.floor(jsonUi.sliderValues.frameMode + 0.5);
     let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
     jump += jsonUi.sliderValues.jumpRate;
-    let J = Math.floor(p.lerp(jumpLast, jumpTarget, jump));
+    let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
     if (isNaN(J) || J < 0) J = 0;
     p.push();
-    switch (frameMode) {
-      case 0:
-        // real-time
-        p.image(pg, 0, 0);
-        break;
-
-      case 1:
+    switch (jsonUi.sliderValues.frameMode) {
+      case 'delay':
         // delay
         p.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
         break;
 
-      case 2:
+      case 'random':
         // random
         p.image(p.random(pgs), 0, 0);
         break;
 
-      case 3:
+      case 'noise':
         // noise
         p.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
         break;
 
-      case 4:
+      case 'jump':
         // jump
         if (jump > 1) jump = 1;
         p.tint(255, jsonUi.sliderValues.blendTint * 255);
         p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
         break;
 
-      case 5:
+      case 'blendtwo':
         // blend two
-        if (Math.floor(jsonUi.sliderValues.blendMode + 0.5) == 0) {
+        if (jsonUi.sliderValues.blendMode == 'blend') {
           p.tint(255, jsonUi.sliderValues.blendTint * 128);
           p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
           p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
         }
-        else {
-          p.tint(255);
+        else if (jsonUi.sliderValues.blendMode == 'lightest') {
           p.background(0);
           p.blendMode(p.LIGHTEST);
+          p.tint(255);
           p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
           p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
           p.blendMode(p.BLEND);
         }
+        else if (jsonUi.sliderValues.blendMode == 'darkest') {
+          p.background(255);
+          p.blendMode(p.DARKEST);
+          p.tint(255);
+          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length + J * 3) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length + J * 4) % pgs.length], 0, 0);
+          p.blendMode(p.BLEND);
+        }
+        break;
+
+      case 'normal':
+      default:
+        // real-time
+        p.image(pg, 0, 0);
+        break;
     }
     p.pop();
 
