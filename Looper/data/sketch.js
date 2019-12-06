@@ -2,7 +2,7 @@ let ws = new WebSocket('ws://localhost:8035/staebe');
 
 const sliderProperties = {
 	background: { min: 0, max: 255, default: 255 },
-	delayFrame: { min: 0, max: 150, default: 0 },
+	delayFrame: { min: 0, max: 600, default: 0 },
 	debugMode: { radio: ['showVideo', 'showDigits'], default: 'showVideo' },
 	frameMode: { radio: ['normal', 'delay', 'random', 'noise', 'jump', 'blendtwo'], default: 'normal' },
 	blendTint: { min: 0, max: 1, default: 0.3 },

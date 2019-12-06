@@ -16,7 +16,7 @@ var s = function (p) {
     p.frameRate(30);
     p.background(0);
 
-    let length = 60//0;
+    let length = 660;
     if (pgs.length != length) {
       pgs = [];
       for (let i = 0; i < length; i++) {
@@ -44,9 +44,9 @@ var s = function (p) {
     if (jsonUi.sliderValues == undefined) {
       jsonUi.sliderValues = {
         background: 0,
-        delayFrame: 0,
+        delayFrame: 30,
         debugMode: 'showVideo',
-        frameMode: 'normal',
+        frameMode: 'delay',
         blendTint: 0.3,
         blendMode: 'blend',
         jumpRate: 0.1,
@@ -124,11 +124,13 @@ var s = function (p) {
           p.background(255);
           p.blendMode(p.DARKEST);
           p.tint(255);
-          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
-          p.image(pgs[(index + pgs.length + J * 3) % pgs.length], 0, 0);
-          p.image(pgs[(index + pgs.length + J * 4) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length - 30 * 20) % pgs.length], 0, 0);
+          p.image(pgs[(index + pgs.length - 30 * 0) % pgs.length], 0, 0);
+          // p.image(pgs[(index + pgs.length + J * 3) % pgs.length], 0, 0);
+          // p.image(pgs[(index + pgs.length + J * 4) % pgs.length], 0, 0);
           p.blendMode(p.BLEND);
+          // p.filter(p.INVERT)
+          // p.filter(p.THRESHOLD, 0.2)
         }
         break;
 
