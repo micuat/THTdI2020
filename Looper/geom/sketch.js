@@ -4,8 +4,9 @@ var height = 480//720;
 if (pgTapes == undefined) {
   var pgTapes = [];
   for (let i = 0; i < 4; i++) {
-    pgTapes[i] = { render: undefined, tape: [] };
+    pgTapes[i] = [];
   }
+  var pgRenders = [];
 }
 
 var s = function (p) {
@@ -25,26 +26,23 @@ var s = function (p) {
         fixedPgs[i] = p001.createGraphics(width, height, p001.P3D);
       }
     }
-    
+
     p.createCanvas(width * 2, height * 2)
     p.frameRate(30);
     p.background(0);
 
     let pgCount = 0;
-    for (let i = 0; i < pgTapes.length; i++) {
-      let length = 600;
-      if (pgTapes[i].length != length) {
-        pgTapes[i] = {
-          render: fixedPgs[pgCount++],
-          tape: []
-        };
+    let length = 600;
+    if (pgTapes[0].length != length) {
+      for (let i = 0; i < pgTapes.length; i++) {
+        pgTapes[i] = []
         for (let j = 0; j < length; j++) {
-          pgTapes[i].tape.push(fixedPgs[pgCount++]);
-          pgTapes[i].tape.push(fixedPgs[pgCount++]);
-          // pgTapes[i].tape.beginDraw();
-          // pgTapes[i].tape.background(0, 255, 255);
-          // pgTapes[i].tape.endDraw();
+          pgTapes[i].push(fixedPgs[pgCount++]);
         }
+      }
+
+      for (let i = 0; i < 4; i++) {
+        pgRenders[i] = fixedPgs[pgCount++];
       }
     }
 
@@ -52,6 +50,7 @@ var s = function (p) {
     var Thread = Java.type('java.lang.Thread');
     new Thread(function () {
       font = p.createFont('Verdana', 128);
+      p.delay(1000);
       setupDone = true;
     }).start();
   }
@@ -88,26 +87,25 @@ var s = function (p) {
     p.processCamera(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[1], p.movies[0]);
 
-    p.renderVideo(pgTapes[0]);
-    p.renderVideo(pgTapes[1]);
+    p.renderVideo(pgTapes[0], pgRenders[0]);
+    p.renderVideo(pgTapes[1], pgRenders[1]);
 
-    p.image(pgTapes[0].render, 0, 0);
-    p.image(pgTapes[1].render, width, 0);
+    p.image(pgRenders[0], 0, 0);
+    p.image(pgRenders[1], width, 0);
 
-    index = (index + 1) % pgTapes[0].tape.length;
+    index = (index + 1) % pgTapes[0].length;
 
     let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
       print(p.frameRate());
       jumpLast = jumpTarget;
-      jumpTarget = Math.floor(p.random(pgTapes[0].tape.length))
+      jumpTarget = Math.floor(p.random(pgTapes[0].length))
       jump = 0;
     }
     lastT = t;
   }
 
-  p.processCamera = function (pgTape, capture) {
-    let pgs = pgTape.tape;
+  p.processCamera = function (pgs, capture) {
     let pg = pgs[index];
     pg.beginDraw();
     pg.blendMode(p.BLEND);
@@ -124,9 +122,7 @@ var s = function (p) {
     pg.endDraw();
   }
 
-  p.renderVideo = function (pgTape) {
-    let pgs = pgTape.tape;
-    let render = pgTape.render;
+  p.renderVideo = function (pgs, render) {
     let pg = pgs[index];
     render.beginDraw();
     // p.background(jsonUi.sliderValues.background);
@@ -195,9 +191,7 @@ var s = function (p) {
     render.endDraw();
   }
 
-  p.recordMovie = function (pgTape, movie) {
-    let pgs = pgTape.tape;
-    let render = pgTape.render;
+  p.recordMovie = function (pgs, movie) {
     if (videoTapingCount >= pgs.length) return;
     let pg = pgs[videoTapingCount];
     pg.beginDraw();
@@ -206,6 +200,7 @@ var s = function (p) {
     pg.endDraw();
 
     videoTapingCount++;
-  }};
+  }
+};
 
 var p001 = new p5(s);
