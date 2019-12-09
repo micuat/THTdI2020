@@ -87,8 +87,8 @@ var s = function (p) {
     p.processCamera(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[1], p.movies[0]);
 
-    p.renderVideo(pgTapes[0], pgRenders[0]);
-    p.renderVideo(pgTapes[1], pgRenders[1]);
+    p.renderVideo(pgTapes[0], pgRenders[0], 0);
+    p.renderVideo(pgTapes[1], pgRenders[0], 1);
 
     p.spouts[0].sendTexture(pgRenders[0]);    
     p.spouts[1].sendTexture(pgRenders[1]);    
@@ -119,6 +119,10 @@ var s = function (p) {
     pg.blendMode(p.BLEND);
     pg.background(0);
     if (jsonUi.sliderValues.debugMode == 'showVideo') {
+      pg.translate(pg.width / 2, pg.height / 2);
+      pg.scale(1, 1.33333);
+      pg.translate(-pg.width / 2, -pg.height / 2);
+
       pg.image(capture, 0, 0, width, height);
     }
     else {
@@ -137,7 +141,7 @@ var s = function (p) {
     render.blendMode(p.BLEND);
 
     let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
-    jump += 1 / 30 / 3;//jsonUi.sliderValues.jumpRate;
+    jump += 1 / 30 / 10;//jsonUi.sliderValues.jumpRate;
     let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
     if (isNaN(J) || J < 0) J = 0;
     render.push();
