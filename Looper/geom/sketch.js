@@ -75,10 +75,14 @@ var s = function (p) {
     //   p.captures[1].read();
     // }
 
-    p.processVideo(pgTapes[0], p.captures[0]);
+    p.processCamera(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[1], p.movies[0]);
+
+    p.renderVideo(pgTapes[0]);
+    p.renderVideo(pgTapes[1]);
+
     p.image(pgTapes[0].render, 0, 0);
-    p.image(pgTapes[1].tape[index], width, 0);
+    p.image(pgTapes[1].render, width, 0);
 
     index = (index + 1) % pgTapes[0].tape.length;
 
@@ -92,9 +96,8 @@ var s = function (p) {
     lastT = t;
   }
 
-  p.processVideo = function (pgTape, capture) {
+  p.processCamera = function (pgTape, capture) {
     let pgs = pgTape.tape;
-    let render = pgTape.render;
     let pg = pgs[index];
     pg.beginDraw();
     pg.blendMode(p.BLEND);
@@ -106,10 +109,15 @@ var s = function (p) {
       pg.translate(pg.width / 2, pg.height / 2);
       pg.textFont(font);
       let x = p.map(Math.floor(index / 10) * 10, 0, pgs.length, -200, 200);
-      pg.text(("     " + index).slice(-2), x - 64, 0);
+      pg.text(("00000" + index).slice(-4), x - 64, 0);
     }
     pg.endDraw();
+  }
 
+  p.renderVideo = function (pgTape) {
+    let pgs = pgTape.tape;
+    let render = pgTape.render;
+    let pg = pgs[index];
     render.beginDraw();
     // p.background(jsonUi.sliderValues.background);
     render.blendMode(p.BLEND);

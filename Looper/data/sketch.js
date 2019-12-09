@@ -7,7 +7,7 @@ const sliderProperties = {
 	frameMode: { radio: ['normal', 'delay', 'random', 'noise', 'jump', 'blendtwo'], default: 'normal' },
 	blendTint: { min: 0, max: 1, default: 0.3 },
 	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'blend' },
-	jumpRate: { min: 0, max: 1, default: 0.1 },
+	jumpRate: { min: 0, max: 1, default: 1 },
 	tUpdate: { min: 1, max: 20, default: 5 },
 };
 const sliderValues = {};
