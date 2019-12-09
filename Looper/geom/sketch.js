@@ -1,5 +1,8 @@
-if (pgs == undefined) {
-  var pgs = [];
+if (pgTapes == undefined) {
+  var pgTapes = [];
+  for (let i = 0; i < 4; i++) {
+    pgTapes[i] = { render: undefined, tape: [] };
+  }
 }
 var s = function (p) {
   let index = 0;
@@ -11,19 +14,28 @@ var s = function (p) {
 
   let setupDone = false;
 
+  let videoTaping = true;
+  let videoTapingCount = 0;
+
   p.setup = function () {
     p.createCanvas(width * 2, height * 2)
     p.frameRate(30);
     p.background(0);
 
-    let length = 660;
-    if (pgs.length != length) {
-      pgs = [];
-      for (let i = 0; i < length; i++) {
-        pgs.push(p.createGraphics(width, height, p.P3D));
-        // pgs[i].beginDraw();
-        // pgs[i].background(0, 255, 255);
-        // pgs[i].endDraw();
+    for (let i = 0; i < pgTapes.length; i++) {
+      let length = 600;
+      if (pgTapes[i].length != length) {
+        pgTapes[i] = {
+          render: p.createGraphics(width, height, p.P3D),
+          tape: []
+        };
+        for (let j = 0; j < length; j++) {
+          pgTapes[i].tape.push(p.createGraphics(width, height, p.P3D));
+          pgTapes[i].tape.push(p.createGraphics(width, height, p.P3D));
+          // pgTapes[i].tape.beginDraw();
+          // pgTapes[i].tape.background(0, 255, 255);
+          // pgTapes[i].tape.endDraw();
+        }
       }
     }
 
@@ -62,6 +74,10 @@ var s = function (p) {
     // if (p.captures[1].available() == true) {
     //   p.captures[1].read();
     // }
+
+    let pgTape = pgTapes[0];
+    let pgs = pgTape.tape;
+    let render = pgTape.render;
     let pg = pgs[index];
     pg.beginDraw();
     pg.blendMode(p.BLEND);
@@ -77,78 +93,73 @@ var s = function (p) {
     }
     pg.endDraw();
 
+    render.beginDraw();
     // p.background(jsonUi.sliderValues.background);
-    p.blendMode(p.BLEND);
+    render.blendMode(p.BLEND);
 
     let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
     jump += jsonUi.sliderValues.jumpRate;
     let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
     if (isNaN(J) || J < 0) J = 0;
-    p.push();
+    render.push();
     switch (jsonUi.sliderValues.frameMode) {
       case 'delay':
         // delay
-        p.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
+        render.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
         break;
 
       case 'random':
         // random
-        p.image(p.random(pgs), 0, 0);
+        render.image(p.random(pgs), 0, 0);
         break;
 
       case 'noise':
         // noise
-        p.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
+        render.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
         break;
 
       case 'jump':
         // jump
         if (jump > 1) jump = 1;
-        p.tint(255, jsonUi.sliderValues.blendTint * 255);
-        p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+        render.tint(255, jsonUi.sliderValues.blendTint * 255);
+        render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
         break;
 
       case 'blendtwo':
         // blend two
         if (jsonUi.sliderValues.blendMode == 'blend') {
-          p.tint(255, jsonUi.sliderValues.blendTint * 128);
-          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
+          render.tint(255, jsonUi.sliderValues.blendTint * 128);
+          render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
         }
         else if (jsonUi.sliderValues.blendMode == 'lightest') {
-          p.background(0);
-          p.blendMode(p.LIGHTEST);
-          p.tint(255);
-          p.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          p.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
-          p.blendMode(p.BLEND);
+          render.background(0);
+          render.blendMode(p.LIGHTEST);
+          render.tint(255);
+          render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
+          render.blendMode(p.BLEND);
         }
         else if (jsonUi.sliderValues.blendMode == 'darkest') {
-          p.background(255);
-          p.blendMode(p.DARKEST);
-          p.tint(255);
-          p.image(pgs[(index + pgs.length - 30 * 20) % pgs.length], 0, 0);
-          p.image(pgs[(index + pgs.length - 30 * 0) % pgs.length], 0, 0);
-          // p.image(pgs[(index + pgs.length + J * 3) % pgs.length], 0, 0);
-          // p.image(pgs[(index + pgs.length + J * 4) % pgs.length], 0, 0);
-          p.blendMode(p.BLEND);
-          // p.filter(p.INVERT)
-          // p.filter(p.THRESHOLD, 0.2)
+          render.background(255);
+          render.blendMode(p.DARKEST);
+          render.tint(255);
+          render.image(pgs[(index + pgs.length - 30 * 20) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length - 30 * 0) % pgs.length], 0, 0);
+          render.blendMode(p.BLEND);
         }
         break;
 
       case 'normal':
       default:
         // real-time
-        p.image(pg, 0, 0);
+        render.image(pg, 0, 0);
         break;
     }
-    p.pop();
+    render.pop();
+    render.endDraw();
 
-    // if(p.captures[1].available()) {
-    //   p.image(p.captures[1], width, 0);
-    // }
-
+    p.image(render, 0, 0);
     p.image(p.movies[0], width, 0, width, height);
 
     index = (index + 1) % pgs.length;
