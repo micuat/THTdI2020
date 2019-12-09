@@ -148,6 +148,9 @@ var s = function (p) {
     // if(p.captures[1].available()) {
     //   p.image(p.captures[1], width, 0);
     // }
+
+    p.image(p.movies[0], width, 0, width, height);
+
     index = (index + 1) % pgs.length;
 
     let T = jsonUi.sliderValues.tUpdate;
@@ -156,6 +159,8 @@ var s = function (p) {
       jumpLast = jumpTarget;
       jumpTarget = Math.floor(p.random(pgs.length))
       jump = 0;
+
+      p.movies[0].jump(0);
     }
     lastT = t;
   }

@@ -49,6 +49,7 @@ NetAddress myRemoteLocation;
 
 import processing.video.*;
 public Capture[] captures = new Capture[2];
+public Movie[] movies = new Movie[1];
 
 public PGraphics renderPg;
 
@@ -118,8 +119,15 @@ void setup() {
     
     // Start capturing the images from the camera
     captures[0].start();
-    captures[1].start();
+    //captures[1].start();
   }
+  
+  movies[0] = new Movie(this, "191111.mp4");  
+
+  movies[0].play();
+  movies[0].jump(0);
+  movies[0].loop();
+  //movies[0].pause();
 
   // set the logger level to info
   httpServer.setLoggerLevel(Level.INFO);
@@ -286,6 +294,10 @@ void initNashorn() {
 //void captureEvent(Capture c) {
 //  c.read();
 //}
+
+void movieEvent(Movie m) {
+  m.read();
+}
 
 void draw() {
   //surface.setLocation(100, 100);
