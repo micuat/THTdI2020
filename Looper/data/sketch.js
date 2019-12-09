@@ -4,7 +4,7 @@ const sliderProperties = {
 	background: { min: 0, max: 255, default: 255 },
 	delayFrame: { min: 0, max: 600, default: 0 },
 	debugMode: { radio: ['showVideo', 'showDigits'], default: 'showVideo' },
-	frameMode: { radio: ['normal', 'delay', 'random', 'noise', 'jump', 'blendtwo'], default: 'normal' },
+	frameMode: { radio: ['normal', 'delay', 'random', 'noise', 'jump', 'fall', 'blendtwo'], default: 'normal' },
 	blendTint: { min: 0, max: 1, default: 0.3 },
 	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'blend' },
 	jumpRate: { min: 0, max: 1, default: 1 },

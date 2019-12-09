@@ -93,15 +93,20 @@ var s = function (p) {
     p.image(pgRenders[0], 0, 0);
     p.image(pgRenders[1], width, 0);
 
-    index = (index + 1) % pgTapes[0].length;
-
     let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
       print(p.frameRate());
-      jumpLast = jumpTarget;
+      if (jsonUi.sliderValues.frameMode == 'fall') {
+        jumpLast = index;
+      }
+      else {
+        jumpLast = jumpTarget;
+      }
       jumpTarget = Math.floor(p.random(pgTapes[0].length))
       jump = 0;
     }
+
+    index = (index + 1) % pgTapes[0].length;
     lastT = t;
   }
 
@@ -129,7 +134,7 @@ var s = function (p) {
     render.blendMode(p.BLEND);
 
     let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
-    jump += jsonUi.sliderValues.jumpRate;
+    jump += 1 / 30 / 3;//jsonUi.sliderValues.jumpRate;
     let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
     if (isNaN(J) || J < 0) J = 0;
     render.push();
@@ -154,6 +159,14 @@ var s = function (p) {
         if (jump > 1) jump = 1;
         render.tint(255, jsonUi.sliderValues.blendTint * 255);
         render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+        break;
+
+      case 'fall':
+        // fall
+        if (jump > 1) jump = 1;
+        render.image(pgs[jumpLast % pgs.length], 0, 0);
+        render.tint(255, jump * 255);
+        render.image(pgs[index], 0, 0);
         break;
 
       case 'blendtwo':
