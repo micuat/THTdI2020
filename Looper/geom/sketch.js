@@ -14,7 +14,6 @@ var s = function (p) {
 
   let setupDone = false;
 
-  let videoTaping = true;
   let videoTapingCount = 0;
 
   p.setup = function () {
@@ -77,8 +76,9 @@ var s = function (p) {
     // }
 
     p.processVideo(pgTapes[0], p.captures[0]);
+    p.recordMovie(pgTapes[1], p.movies[0]);
     p.image(pgTapes[0].render, 0, 0);
-    p.image(p.movies[0], width, 0, width, height);
+    p.image(pgTapes[1].tape[index], width, 0);
 
     index = (index + 1) % pgTapes[0].tape.length;
 
@@ -88,8 +88,6 @@ var s = function (p) {
       jumpLast = jumpTarget;
       jumpTarget = Math.floor(p.random(pgTapes[0].tape.length))
       jump = 0;
-
-      p.movies[0].jump(0);
     }
     lastT = t;
   }
@@ -178,6 +176,18 @@ var s = function (p) {
     render.pop();
     render.endDraw();
   }
-};
+
+  p.recordMovie = function (pgTape, movie) {
+    let pgs = pgTape.tape;
+    let render = pgTape.render;
+    if (videoTapingCount >= pgs.length) return;
+    let pg = pgs[videoTapingCount];
+    pg.beginDraw();
+    pg.background(0);
+    pg.image(movie, 0, 0, width, height);
+    pg.endDraw();
+
+    videoTapingCount++;
+  }};
 
 var p001 = new p5(s);
