@@ -48,7 +48,7 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 
 import processing.video.*;
-public Capture capture;
+public Capture[] captures = new Capture[2];
 
 public PGraphics renderPg;
 
@@ -100,7 +100,7 @@ void setup() {
 
   if (cameras == null) {
     println("Failed to retrieve the list of available cameras, will try the default...");
-    capture = new Capture(this, 640, 480);
+    captures[0] = new Capture(this, 640, 480);
   } if (cameras.length == 0) {
     println("There are no cameras available for capture.");
     exit();
@@ -110,13 +110,15 @@ void setup() {
 
     // The camera can be initialized directly using an element
     // from the array returned by list():
-    capture = new Capture(this, cameras[1]);
+    captures[0] = new Capture(this, 640, 480, "USB Capture HDMI", 60);
+    //captures[1] = new Capture(this, 640, 480, "Logitech Webcam C925e", 60);
     //capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
     // Or, the settings can be defined based on the text in the list
     //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
     
     // Start capturing the images from the camera
-    capture.start();
+    captures[0].start();
+    captures[1].start();
   }
 
   // set the logger level to info
@@ -127,7 +129,7 @@ void setup() {
 
   wsServer = new WebsocketServer(this, 8035, "/staebe");
 
-  //surface.setResizable(true);
+  surface.setResizable(true);
   frameRate(60);
 
   folderName = "geom";
@@ -281,6 +283,10 @@ void initNashorn() {
   }
 }
 
+//void captureEvent(Capture c) {
+//  c.read();
+//}
+
 void draw() {
   //surface.setLocation(100, 100);
   if (libInited == false) {
@@ -316,7 +322,7 @@ void draw() {
     e.printStackTrace();
   }
   
-  spout.sendTexture();
+  //spout.sendTexture();
 }
 
 private static byte[] encoded;
@@ -401,7 +407,7 @@ public void readFiles(ArrayList<String> paths) throws IOException {
     try {
       nashorn.eval("if(alternateSketch.preload !== undefined) alternateSketch.preload();");
       nashorn.eval("alternateSketch.setup();");
-      //surface.setSize(newWidth, newHeight);
+      surface.setSize(newWidth, newHeight);
     }
     catch (ScriptException e) {
       e.printStackTrace();

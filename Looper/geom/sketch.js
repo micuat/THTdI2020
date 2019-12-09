@@ -12,7 +12,7 @@ var s = function (p) {
   let setupDone = false;
 
   p.setup = function () {
-    p.createCanvas(1600, 800)
+    p.createCanvas(width * 2, height * 2)
     p.frameRate(30);
     p.background(0);
 
@@ -46,7 +46,7 @@ var s = function (p) {
         background: 0,
         delayFrame: 30,
         debugMode: 'showVideo',
-        frameMode: 'delay',
+        frameMode: 'normal',
         blendTint: 0.3,
         blendMode: 'blend',
         jumpRate: 0.1,
@@ -56,15 +56,18 @@ var s = function (p) {
 
     let t = p.millis() * 0.001;
 
-    if (p.capture.available() == true) {
-      p.capture.read();
+    if (p.captures[0].available() == true) {
+      p.captures[0].read();
     }
+    // if (p.captures[1].available() == true) {
+    //   p.captures[1].read();
+    // }
     let pg = pgs[index];
     pg.beginDraw();
     pg.blendMode(p.BLEND);
     pg.background(0);
     if (jsonUi.sliderValues.debugMode == 'showVideo') {
-      pg.image(p.capture, 0, 0, width, height);
+      pg.image(p.captures[0], 0, 0, width, height);
     }
     else {
       pg.translate(pg.width / 2, pg.height / 2);
@@ -142,6 +145,9 @@ var s = function (p) {
     }
     p.pop();
 
+    // if(p.captures[1].available()) {
+    //   p.image(p.captures[1], width, 0);
+    // }
     index = (index + 1) % pgs.length;
 
     let T = jsonUi.sliderValues.tUpdate;
