@@ -1,6 +1,7 @@
 import spout.*;
-Spout spout;
-PGraphics pgr; // Canvas to receive a texture
+Spout[] receivers;
+PGraphics[] canvas;
+int nReceivers = 2;
 
 import deadpixel.keystone.*;
 
@@ -15,28 +16,31 @@ void setup() {
   //size(800, 600, P3D);
   fullScreen(P3D, 2);
 
-  for(int i = 0; i < keystones.length; i++) {
+  for (int i = 0; i < keystones.length; i++) {
     keystones[i] = new Keystone(this);
     surfaces[i] = keystones[i].createCornerPinSurface(200, 150, 20);
     surfaces[i].moveTo(i * 250, 0);
   }
 
   //offscreen = createGraphics(400, 300, P3D);
-  spout = new Spout(this);
-  pgr = createGraphics(width, height, PConstants.P2D);
+  receivers = new Spout[nReceivers];
+  for (int i = 0; i < nReceivers; i++) { 
+    receivers[i] = new Spout(this);
+    String sendername = "Videolooper"+str(i);
+    receivers[i].createReceiver(sendername);
+  }
+  canvas = new PGraphics[nReceivers];
+  for (int i = 0; i < nReceivers; i++) {
+    canvas[i] = createGraphics(640, 480, P2D);
+  }
 }
 
 void draw() {
-  pgr = spout.receiveTexture(pgr);
-
-  //offscreen.beginDraw();
-  //offscreen.image(pgr, 0, 0, offscreen.width/2, offscreen.height/2);
-  //offscreen.endDraw();
-
   background(0);
 
-  for(int i = 0; i < surfaces.length; i++) {
-    surfaces[i].render(pgr, 0, 0, pgr.width, pgr.height);
+  for (int i = 0; i < surfaces.length; i++) {
+    canvas[i] = receivers[i].receiveTexture(canvas[i]);
+    surfaces[i].render(canvas[i], 0, 0, canvas[i].width, canvas[i].height);
   }
 }
 
