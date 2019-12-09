@@ -38,7 +38,7 @@ import netP5.*;
 
 import spout.*;
 
-Spout spout;
+public Spout[] spouts = new Spout[4];
 
 SimpleHTTPServer httpServer;
 
@@ -94,8 +94,10 @@ void setup() {
   oscP5 = new OscP5(this, op);  
   myRemoteLocation = new NetAddress("192.168.0.100", 13000);
 
-  spout = new Spout(this);
-  spout.createSender("Videolooper");
+  for(int i = 0; i < spouts.length; i++) {
+    spouts[i] = new Spout(this);
+    spouts[i].createSender("Videolooper" + str(i), 640, 480);
+  }
 
   String[] cameras = Capture.list();
 

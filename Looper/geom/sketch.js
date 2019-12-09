@@ -90,6 +90,9 @@ var s = function (p) {
     p.renderVideo(pgTapes[0], pgRenders[0]);
     p.renderVideo(pgTapes[1], pgRenders[1]);
 
+    p.spouts[0].sendTexture(pgRenders[0]);    
+    p.spouts[1].sendTexture(pgRenders[1]);    
+
     p.image(pgRenders[0], 0, 0);
     p.image(pgRenders[1], width, 0);
 
