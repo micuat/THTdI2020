@@ -88,7 +88,7 @@ var s = function (p) {
     p.recordMovie(pgTapes[1], p.movies[0]);
 
     p.renderVideo(pgTapes[0], pgRenders[0], 0);
-    p.renderVideo(pgTapes[1], pgRenders[0], 1);
+    p.renderVideo(pgTapes[0], pgRenders[1], 1);
 
     p.spouts[0].sendTexture(pgRenders[0]);    
     p.spouts[1].sendTexture(pgRenders[1]);    
@@ -134,7 +134,7 @@ var s = function (p) {
     pg.endDraw();
   }
 
-  p.renderVideo = function (pgs, render) {
+  p.renderVideo = function (pgs, render, I) {
     let pg = pgs[index];
     render.beginDraw();
     // p.background(jsonUi.sliderValues.background);
@@ -148,7 +148,7 @@ var s = function (p) {
     switch (jsonUi.sliderValues.frameMode) {
       case 'delay':
         // delay
-        render.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
+        render.image(pgs[(index + pgs.length - delay * (I + 1)) % pgs.length], 0, 0);
         break;
 
       case 'random':
