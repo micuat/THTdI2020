@@ -49,9 +49,10 @@ var s = function (p) {
   let jump = 0;
   let jumpTarget = 0;
   let jumpLast = 0;
+  let jsonUi;
   p.draw = function () {
     if (setupDone == false) return;
-    let jsonUi = JSON.parse(p.jsonUiString);
+    jsonUi = JSON.parse(p.jsonUiString);
 
     if (jsonUi.sliderValues == undefined) {
       jsonUi.sliderValues = {
@@ -75,7 +76,25 @@ var s = function (p) {
     //   p.captures[1].read();
     // }
 
-    let pgTape = pgTapes[0];
+    p.processVideo(pgTapes[0], p.captures[0]);
+    p.image(pgTapes[0].render, 0, 0);
+    p.image(p.movies[0], width, 0, width, height);
+
+    index = (index + 1) % pgTapes[0].tape.length;
+
+    let T = jsonUi.sliderValues.tUpdate;
+    if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
+      print(p.frameRate());
+      jumpLast = jumpTarget;
+      jumpTarget = Math.floor(p.random(pgTapes[0].tape.length))
+      jump = 0;
+
+      p.movies[0].jump(0);
+    }
+    lastT = t;
+  }
+
+  p.processVideo = function (pgTape, capture) {
     let pgs = pgTape.tape;
     let render = pgTape.render;
     let pg = pgs[index];
@@ -83,7 +102,7 @@ var s = function (p) {
     pg.blendMode(p.BLEND);
     pg.background(0);
     if (jsonUi.sliderValues.debugMode == 'showVideo') {
-      pg.image(p.captures[0], 0, 0, width, height);
+      pg.image(capture, 0, 0, width, height);
     }
     else {
       pg.translate(pg.width / 2, pg.height / 2);
@@ -158,22 +177,6 @@ var s = function (p) {
     }
     render.pop();
     render.endDraw();
-
-    p.image(render, 0, 0);
-    p.image(p.movies[0], width, 0, width, height);
-
-    index = (index + 1) % pgs.length;
-
-    let T = jsonUi.sliderValues.tUpdate;
-    if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
-      print(p.frameRate());
-      jumpLast = jumpTarget;
-      jumpTarget = Math.floor(p.random(pgs.length))
-      jump = 0;
-
-      p.movies[0].jump(0);
-    }
-    lastT = t;
   }
 };
 
