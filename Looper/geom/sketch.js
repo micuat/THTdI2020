@@ -1,13 +1,15 @@
+var width = 640//1280;
+var height = 480//720;
+
 if (pgTapes == undefined) {
   var pgTapes = [];
   for (let i = 0; i < 4; i++) {
     pgTapes[i] = { render: undefined, tape: [] };
   }
 }
+
 var s = function (p) {
   let index = 0;
-  let width = 640//1280;
-  let height = 480//720;
   let lastT = 0;
 
   let font;
@@ -17,20 +19,28 @@ var s = function (p) {
   let videoTapingCount = 0;
 
   p.setup = function () {
+    if (fixedPgs == undefined) {
+      var fixedPgs = [];
+      for (let i = 0; i < 2500; i++) {
+        fixedPgs[i] = p001.createGraphics(width, height, p001.P3D);
+      }
+    }
+    
     p.createCanvas(width * 2, height * 2)
     p.frameRate(30);
     p.background(0);
 
+    let pgCount = 0;
     for (let i = 0; i < pgTapes.length; i++) {
       let length = 600;
       if (pgTapes[i].length != length) {
         pgTapes[i] = {
-          render: p.createGraphics(width, height, p.P3D),
+          render: fixedPgs[pgCount++],
           tape: []
         };
         for (let j = 0; j < length; j++) {
-          pgTapes[i].tape.push(p.createGraphics(width, height, p.P3D));
-          pgTapes[i].tape.push(p.createGraphics(width, height, p.P3D));
+          pgTapes[i].tape.push(fixedPgs[pgCount++]);
+          pgTapes[i].tape.push(fixedPgs[pgCount++]);
           // pgTapes[i].tape.beginDraw();
           // pgTapes[i].tape.background(0, 255, 255);
           // pgTapes[i].tape.endDraw();
