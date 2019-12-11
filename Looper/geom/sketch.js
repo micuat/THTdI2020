@@ -18,6 +18,7 @@ var s = function (p) {
   let setupDone = false;
 
   let videoTapingCount = 0;
+  let videoCurrent, videoLast;
 
   p.setup = function () {
     if (fixedPgs == undefined) {
@@ -45,6 +46,9 @@ var s = function (p) {
         pgRenders[i] = fixedPgs[pgCount++];
       }
     }
+
+    videoCurrent = p.createImage(width, height, p.RGB);
+    videoLast = p.createImage(width, height, p.RGB);
 
     let self = this;
     var Thread = Java.type('java.lang.Thread');
@@ -83,18 +87,18 @@ var s = function (p) {
     // if (p.captures[1].available() == true) {
     //   p.captures[1].read();
     // }
-
     p.processCamera(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[1], p.movies[0]);
 
     p.renderVideo(pgTapes[1], pgRenders[0], 0);
     p.renderVideo(pgTapes[1], pgRenders[1], 1);
 
-    p.spouts[0].sendTexture(pgRenders[0]);    
-    p.spouts[1].sendTexture(pgRenders[1]);    
+    p.spouts[0].sendTexture(pgRenders[0]);
+    p.spouts[1].sendTexture(pgRenders[1]);
 
     p.image(pgRenders[0], 0, 0);
-    p.image(pgRenders[1], width, 0);
+    p.image(p.movies[0], width, 0, width, height);
+    // p.image(pgRenders[1], width, 0);
 
     let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
@@ -135,7 +139,7 @@ var s = function (p) {
   }
 
   p.renderVideo = function (pgs, render, I) {
-    let pg = pgs[index];
+    let pg = pgs[index % (videoTapingCount > 0 ? videoTapingCount : 1)];
     render.beginDraw();
     // p.background(jsonUi.sliderValues.background);
     render.blendMode(p.BLEND);
@@ -222,8 +226,47 @@ var s = function (p) {
     render.endDraw();
   }
 
+  let skipCountdown = 10;
   p.recordMovie = function (pgs, movie) {
     if (videoTapingCount >= pgs.length) return;
+
+    // swap instead of copy for efficiency
+    let temp = videoCurrent;
+    videoCurrent = videoLast;
+    videoLast = temp;
+    videoCurrent.copy(movie, 0, 0, movie.width, movie.height, 0, 0, width, height);
+
+    if (videoTapingCount == 0) {
+      lastTapedCount = 0;
+    }
+    else {
+      videoCurrent.loadPixels();
+      videoLast.loadPixels();
+      let th = 100;
+      let total = 0;
+      let roi = {x: 0, y: 0, w: width, h: height};
+      for (let i = roi.y; i < roi.h; i+=4) {
+        for (let j = roi.x; j < roi.w; j+=4) {
+          let loc = i * width + j;
+          let pixc = videoCurrent.pixels[loc];
+          let pixl = videoLast.pixels[loc];
+          total += Math.abs(p.red(pixc) - p.red(pixl)) +
+          Math.abs(p.green(pixc) - p.green(pixl)) +
+          Math.abs(p.blue(pixc) - p.blue(pixl));
+        }
+      }
+      // print(total)
+      if (total < th) {
+        skipCountdown--;
+        if (skipCountdown <= 0) {
+          return;
+        }
+      }
+      else {
+        skipCountdown = 10;
+      }
+    }
+
     let pg = pgs[videoTapingCount];
     pg.beginDraw();
     pg.background(0);
