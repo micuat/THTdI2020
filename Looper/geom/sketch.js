@@ -87,8 +87,8 @@ var s = function (p) {
     p.processCamera(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[1], p.movies[0]);
 
-    p.renderVideo(pgTapes[0], pgRenders[0], 0);
-    p.renderVideo(pgTapes[0], pgRenders[1], 1);
+    p.renderVideo(pgTapes[1], pgRenders[0], 0);
+    p.renderVideo(pgTapes[1], pgRenders[1], 1);
 
     p.spouts[0].sendTexture(pgRenders[0]);    
     p.spouts[1].sendTexture(pgRenders[1]);    
@@ -173,7 +173,18 @@ var s = function (p) {
         if (jump > 1) jump = 1;
         render.image(pgs[jumpLast % pgs.length], 0, 0);
         render.tint(255, jump * 255);
+        // if (jsonUi.sliderValues.blendMode == 'blend') {
+        // }
+        // else if (jsonUi.sliderValues.blendMode == 'lightest') {
+        //   render.tint(jump * 255, 255);
+        //   render.blendMode(p.LIGHTEST);
+        // }
+        // else if (jsonUi.sliderValues.blendMode == 'darkest') {
+        //   render.tint((1 - jump) * 255, 255);
+        //   render.blendMode(p.DARKEST);
+        // }
         render.image(pgs[index], 0, 0);
+        render.blendMode(p.BLEND);
         break;
 
       case 'blendtwo':
