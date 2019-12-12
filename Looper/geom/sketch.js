@@ -64,6 +64,7 @@ var s = function (p) {
   let jumpTarget = 0;
   let jumpLast = 0;
   let jsonUi;
+  let AVGX = 0, AVGY = 0;
   p.draw = function () {
     if (setupDone == false) return;
     jsonUi = JSON.parse(p.jsonUiString);
@@ -93,16 +94,28 @@ var s = function (p) {
     //p.recordMovie(pgTapes[1], p.movies[0]);
 
     p.renderVideo(pgTapes[0], pgRenders[0], 0);
-    p.renderVideo(pgTapes[0], pgRenders[1], 1);
+    // p.renderVideo(pgTapes[0], pgRenders[1], 1);
+
+    let pg = pgRenders[1];
+    let pgs = pgTapes[0].tape;
+    pg.beginDraw();
+    // pg.translate(pg.width/2, pg.height/2);
+    pg.translate(AVGX, AVGY);
+    pg.scale(2, 2);
+    pg.translate(-AVGX, -AVGY);
+    // pg.translate(-pg.width/2, -pg.height/2);
+    // pg.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
+    pg.image(videoCurrent, 0, 0)
+    pg.endDraw();
 
     p.spouts[0].sendTexture(pgRenders[0]);
     p.spouts[1].sendTexture(pgRenders[1]);
 
     p.image(pgRenders[0], 0, 0);
-    p.image(videoCurrent, width, 0);
+    // p.image(videoCurrent, width, 0);
     // p.image(p.movies[0], width, 0, width, height);
     // p.image(p.captures[0], width, 0);
-    // p.image(pgRenders[1], width, 0);
+    p.image(pgRenders[1], width, 0);
 
     let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
@@ -163,15 +176,28 @@ var s = function (p) {
       let th = 150000;
       let total = 0;
       let roi = {x: 0, y: 0, w: width, h: height};
+      let avgX = 0;
+      let avgY = 0;
+      let avgCount = 0;
       for (let i = roi.y; i < roi.h; i+=4) {
         for (let j = roi.x; j < roi.w; j+=4) {
           let loc = i * width + j;
           let pixc = videoCurrent.pixels[loc];
           let pixl = videoLast.pixels[loc];
-          total += Math.abs(p.red(pixc) - p.red(pixl)) +
+          let diff = Math.abs(p.red(pixc) - p.red(pixl)) +
           Math.abs(p.green(pixc) - p.green(pixl)) +
           Math.abs(p.blue(pixc) - p.blue(pixl));
+          total += diff;
+          if(diff > 100) {
+            avgX += j;
+            avgY += i;
+            avgCount++;
+          }
         }
+      }
+      if(avgCount > 0) {
+        AVGX = p.lerp(AVGX, avgX / avgCount, 0.2);
+        AVGY = p.lerp(AVGY, avgY / avgCount, 0.2);
       }
       print(total)
       if (total < th) {
