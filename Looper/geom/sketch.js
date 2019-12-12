@@ -4,7 +4,7 @@ var height = 480//720;
 if (pgTapes == undefined) {
   var pgTapes = [];
   for (let i = 0; i < 4; i++) {
-    pgTapes[i] = [];
+    pgTapes[i] = { tape: [], count: 0, skipCountdown: 10 };
   }
   var pgRenders = [];
 }
@@ -17,7 +17,6 @@ var s = function (p) {
 
   let setupDone = false;
 
-  let videoTapingCount = 0;
   let videoCurrent, videoLast;
 
   p.setup = function () {
@@ -34,11 +33,14 @@ var s = function (p) {
 
     let pgCount = 0;
     let length = 600;
-    if (pgTapes[0].length != length) {
+    for (let i = 0; i < pgTapes.length; i++) {
+      pgTapes[i].count = 0;
+    }
+    if (pgTapes[0].tape.length != length) {
       for (let i = 0; i < pgTapes.length; i++) {
-        pgTapes[i] = []
+        pgTapes[i].tape = [];
         for (let j = 0; j < length; j++) {
-          pgTapes[i].push(fixedPgs[pgCount++]);
+          pgTapes[i].tape.push(fixedPgs[pgCount++]);
         }
       }
 
@@ -87,17 +89,19 @@ var s = function (p) {
     // if (p.captures[1].available() == true) {
     //   p.captures[1].read();
     // }
-    p.processCamera(pgTapes[0], p.captures[0]);
-    p.recordMovie(pgTapes[1], p.movies[0]);
+    p.processCameraWithMotion(pgTapes[0], p.captures[0]);
+    //p.recordMovie(pgTapes[1], p.movies[0]);
 
-    p.renderVideo(pgTapes[1], pgRenders[0], 0);
-    p.renderVideo(pgTapes[1], pgRenders[1], 1);
+    p.renderVideo(pgTapes[0], pgRenders[0], 0);
+    // p.renderVideo(pgTapes[0], pgRenders[1], 1);
 
     p.spouts[0].sendTexture(pgRenders[0]);
-    p.spouts[1].sendTexture(pgRenders[1]);
+    // p.spouts[1].sendTexture(pgRenders[1]);
 
     p.image(pgRenders[0], 0, 0);
-    p.image(p.movies[0], width, 0, width, height);
+    // p.image(videoCurrent, 0, 0);
+    // p.image(p.movies[0], width, 0, width, height);
+    p.image(p.captures[0], width, 0);
     // p.image(pgRenders[1], width, 0);
 
     let T = jsonUi.sliderValues.tUpdate;
@@ -109,15 +113,16 @@ var s = function (p) {
       else {
         jumpLast = jumpTarget;
       }
-      jumpTarget = Math.floor(p.random(pgTapes[0].length))
+      jumpTarget = Math.floor(p.random(pgTapes[0].tape.length))
       jump = 0;
     }
 
-    index = (index + 1) % pgTapes[0].length;
+    index = (index + 1) % pgTapes[0].tape.length;
     lastT = t;
   }
 
-  p.processCamera = function (pgs, capture) {
+  p.processCamera = function (pgTape, capture) {
+    let pgs = pgTape.tape;
     let pg = pgs[index];
     pg.beginDraw();
     pg.blendMode(p.BLEND);
@@ -138,8 +143,61 @@ var s = function (p) {
     pg.endDraw();
   }
 
-  p.renderVideo = function (pgs, render, I) {
-    let pg = pgs[index % (videoTapingCount > 0 ? videoTapingCount : 1)];
+  p.processCameraWithMotion = function (pgTape, capture) {
+    let pgs = pgTape.tape;
+    if (pgTape.count >= pgs.length) return;
+
+    // swap instead of copy for efficiency
+    let temp = videoCurrent;
+    videoCurrent = videoLast;
+    videoLast = temp;
+    videoCurrent.copy(capture, 0, 0, capture.width, capture.height, 0, 0, width, height);
+
+    if (pgTape.count == 0) {
+    }
+    else {
+      videoCurrent.loadPixels();
+      videoLast.loadPixels();
+      let th = 100000;
+      let total = 0;
+      let roi = {x: 0, y: 0, w: width, h: height};
+      for (let i = roi.y; i < roi.h; i+=4) {
+        for (let j = roi.x; j < roi.w; j+=4) {
+          let loc = i * width + j;
+          let pixc = videoCurrent.pixels[loc];
+          let pixl = videoLast.pixels[loc];
+          total += Math.abs(p.red(pixc) - p.red(pixl)) +
+          Math.abs(p.green(pixc) - p.green(pixl)) +
+          Math.abs(p.blue(pixc) - p.blue(pixl));
+        }
+      }
+      print(total)
+      if (total < th) {
+        pgTape.skipCountdown--;
+        if (pgTape.skipCountdown <= 0) {
+          return;
+        }
+      }
+      else {
+        pgTape.skipCountdown = 10;
+      }
+    }
+
+    let pg = pgs[pgTape.count];
+    pg.beginDraw();
+    pg.background(0);
+    pg.translate(pg.width / 2, pg.height / 2);
+    pg.scale(1, 1.33333);
+    pg.translate(-pg.width / 2, -pg.height / 2);
+    pg.image(videoCurrent, 0, 0, width, height);
+    pg.endDraw();
+
+    pgTape.count++;
+  }
+
+  p.renderVideo = function (pgTape, render, I) {
+    let pgs = pgTape.tape;
+    let pg = pgs[index % Math.max(pgTape.count, 1)];
     render.beginDraw();
     // p.background(jsonUi.sliderValues.background);
     render.blendMode(p.BLEND);
@@ -226,9 +284,9 @@ var s = function (p) {
     render.endDraw();
   }
 
-  let skipCountdown = 10;
-  p.recordMovie = function (pgs, movie) {
-    if (videoTapingCount >= pgs.length) return;
+  p.recordMovie = function (pgTape, movie) {
+    let pgs = pgTape.tape;
+    if (pgTape.count >= pgs.length) return;
 
     // swap instead of copy for efficiency
     let temp = videoCurrent;
@@ -236,8 +294,7 @@ var s = function (p) {
     videoLast = temp;
     videoCurrent.copy(movie, 0, 0, movie.width, movie.height, 0, 0, width, height);
 
-    if (videoTapingCount == 0) {
-      lastTapedCount = 0;
+    if (pgTape.count == 0) {
     }
     else {
       videoCurrent.loadPixels();
@@ -257,23 +314,23 @@ var s = function (p) {
       }
       // print(total)
       if (total < th) {
-        skipCountdown--;
-        if (skipCountdown <= 0) {
+        pgTape.skipCountdown--;
+        if (pgTape.skipCountdown <= 0) {
           return;
         }
       }
       else {
-        skipCountdown = 10;
+        pgTape.skipCountdown = 10;
       }
     }
 
-    let pg = pgs[videoTapingCount];
+    let pg = pgs[pgTape.count];
     pg.beginDraw();
     pg.background(0);
     pg.image(movie, 0, 0, width, height);
     pg.endDraw();
 
-    videoTapingCount++;
+    pgTape.count++;
   }
 };
 

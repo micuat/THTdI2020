@@ -85,6 +85,7 @@ public String jsonUiString = "{}";
 void setup() {
   size(640, 480, P3D);
   //fullScreen(P3D, 2);
+  surface.setLocation(100, 100);
 
   renderPg = createGraphics(width, height, P3D);
 
@@ -302,7 +303,6 @@ void movieEvent(Movie m) {
 }
 
 void draw() {
-  //surface.setLocation(100, 100);
   if (libInited == false) {
     initNashorn();
     try {
