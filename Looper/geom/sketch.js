@@ -4,7 +4,7 @@ var height = 480//720;
 if (pgTapes == undefined) {
   var pgTapes = [];
   for (let i = 0; i < 4; i++) {
-    pgTapes[i] = { tape: [], count: 0, skipCountdown: 10 };
+    pgTapes[i] = { tape: [], count: 0, skipCountdown: 0 };
   }
   var pgRenders = [];
 }
@@ -93,15 +93,15 @@ var s = function (p) {
     //p.recordMovie(pgTapes[1], p.movies[0]);
 
     p.renderVideo(pgTapes[0], pgRenders[0], 0);
-    // p.renderVideo(pgTapes[0], pgRenders[1], 1);
+    p.renderVideo(pgTapes[0], pgRenders[1], 1);
 
     p.spouts[0].sendTexture(pgRenders[0]);
-    // p.spouts[1].sendTexture(pgRenders[1]);
+    p.spouts[1].sendTexture(pgRenders[1]);
 
     p.image(pgRenders[0], 0, 0);
-    // p.image(videoCurrent, 0, 0);
+    p.image(videoCurrent, width, 0);
     // p.image(p.movies[0], width, 0, width, height);
-    p.image(p.captures[0], width, 0);
+    // p.image(p.captures[0], width, 0);
     // p.image(pgRenders[1], width, 0);
 
     let T = jsonUi.sliderValues.tUpdate;
@@ -145,8 +145,10 @@ var s = function (p) {
 
   p.processCameraWithMotion = function (pgTape, capture) {
     let pgs = pgTape.tape;
-    if (pgTape.count >= pgs.length) return;
-
+    if (pgTape.count >= pgs.length) {
+      pgTape.count = 0;
+      // return;
+    }
     // swap instead of copy for efficiency
     let temp = videoCurrent;
     videoCurrent = videoLast;
@@ -158,7 +160,7 @@ var s = function (p) {
     else {
       videoCurrent.loadPixels();
       videoLast.loadPixels();
-      let th = 100000;
+      let th = 150000;
       let total = 0;
       let roi = {x: 0, y: 0, w: width, h: height};
       for (let i = roi.y; i < roi.h; i+=4) {
@@ -331,6 +333,12 @@ var s = function (p) {
     pg.endDraw();
 
     pgTape.count++;
+  }
+
+  p.keyPressed = function() {
+    if(p.key == ' ') {
+      pgTapes[0].count = 0;
+    }
   }
 };
 
