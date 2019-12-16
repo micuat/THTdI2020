@@ -14,6 +14,7 @@ void setup() {
   // Keystone will only work with P3D or OPENGL renderers, 
   // since it relies on texture mapping to deform
   //size(800, 600, P3D);
+  //surface.setResizable(true);
   fullScreen(P3D, 2);
 
   for (int i = 0; i < keystones.length; i++) {
