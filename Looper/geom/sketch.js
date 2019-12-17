@@ -84,6 +84,9 @@ var s = function (p) {
 
     let t = p.millis() * 0.001;
 
+    // p.receivers[0].receiveTexture(pgRenders[6]);
+    // p.receivers[1].receiveTexture(pgRenders[7]);
+
     if (p.captures[0].available() == true) {
       p.captures[0].read();
     }
@@ -91,17 +94,18 @@ var s = function (p) {
     //   p.captures[1].read();
     // }
     p.processCamera(pgTapes[0], p.captures[0]);
-    // p.processCamera(pgTapes[1], p.captures[1]);
+    // p.processCamera(pgTapes[0], pgRenders[6]);
+    p.processCamera(pgTapes[1], pgRenders[7]);
     // p.processCameraWithMotion(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[2], p.movies[0]);
 
     // p.renderVideo(pgTapes[0], pgRenders[0], 0);
     p.renderVideoDelay(pgTapes[0], pgRenders[0]);
-    // p.renderVideoDelay(pgTapes[1], pgRenders[1]);
+    p.renderVideoDelay(pgTapes[1], pgRenders[1]);
     // p.renderVideoNormal(pgRenders[0]);
     p.renderVideo(pgTapes[2], pgRenders[3], 1);
 
-    // p.renderBlank(pgRenders[1]);
+    p.renderBlank(pgRenders[1]);
     p.renderBlank(pgRenders[2]);
     // p.renderBlank(pgRenders[3]);
     p.renderBlank(pgRenders[4]);
@@ -109,7 +113,7 @@ var s = function (p) {
     p.renderBlank(pgRenders[6]);
 
     // p.renderNum(pgRenders[0], 0);
-    p.renderNum(pgRenders[1], 1);
+    // p.renderNum(pgRenders[1], 1);
     // p.renderNum(pgRenders[2], 2);
     // p.renderNum(pgRenders[3], 3);
     // let pg = pgRenders[1];
@@ -131,8 +135,8 @@ var s = function (p) {
 
     p.image(pgRenders[0], 0, 0); // tape
     p.image(pgRenders[3], width, 0); // zoom
-    p.image(p.captures[0], 0, height);
-    p.image(pgRenders[1], width, height);
+    p.image(pgRenders[6], 0, height);
+    p.image(pgRenders[7], width, height);
 
     // p.image(videoCurrent, width, 0);
     // p.image(p.movies[0], width, 0, width, height);
