@@ -49,7 +49,7 @@ NetAddress myRemoteLocation;
 
 import processing.video.*;
 public Capture[] captures = new Capture[2];
-public Movie[] movies = new Movie[1];
+public Movie[] movies = new Movie[2];
 
 public PGraphics renderPg;
 
@@ -125,12 +125,16 @@ void setup() {
     //captures[1].start();
   }
   
-  movies[0] = new Movie(this, "191111.mp4");  
+  movies[0] = new Movie(this, "191217_w.mp4");  
+  movies[1] = new Movie(this, "191217_b.mp4");  
 
-  movies[0].play();
-  movies[0].jump(0);
-  movies[0].loop();
-  //movies[0].pause();
+  for(int i = 0; i < movies.length; i++) {
+    movies[i].play();
+    movies[i].jump(0);
+    movies[i].loop();
+    movies[i].volume(0);
+    //movies[i].pause();
+  }
 
   // set the logger level to info
   httpServer.setLoggerLevel(Level.INFO);
