@@ -91,13 +91,13 @@ var s = function (p) {
     //   p.captures[1].read();
     // }
     p.processCamera(pgTapes[0], p.captures[0]);
-    p.processCamera(pgTapes[1], p.captures[1]);
+    // p.processCamera(pgTapes[1], p.captures[1]);
     // p.processCameraWithMotion(pgTapes[0], p.captures[0]);
     p.recordMovie(pgTapes[2], p.movies[0]);
 
     // p.renderVideo(pgTapes[0], pgRenders[0], 0);
     p.renderVideoDelay(pgTapes[0], pgRenders[0]);
-    p.renderVideoDelay(pgTapes[1], pgRenders[1]);
+    // p.renderVideoDelay(pgTapes[1], pgRenders[1]);
     // p.renderVideoNormal(pgRenders[0]);
     p.renderVideo(pgTapes[2], pgRenders[3], 1);
 
@@ -109,7 +109,7 @@ var s = function (p) {
     p.renderBlank(pgRenders[6]);
 
     // p.renderNum(pgRenders[0], 0);
-    // p.renderNum(pgRenders[1], 1);
+    p.renderNum(pgRenders[1], 1);
     // p.renderNum(pgRenders[2], 2);
     // p.renderNum(pgRenders[3], 3);
     // let pg = pgRenders[1];

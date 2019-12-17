@@ -125,12 +125,13 @@ void setup() {
     captures[1].start();
   }
   
-  movies[0] = new Movie(this, "191217_w.mp4");  
-  movies[1] = new Movie(this, "191217_b.mp4");  
+  movies[0] = new Movie(this, "191217_bl.mp4");  
+  movies[1] = new Movie(this, "191217_wl.mp4");  
 
   for(int i = 0; i < movies.length; i++) {
     movies[i].play();
     movies[i].jump(0);
+    movies[i].speed(1);
     movies[i].loop();
     movies[i].volume(0);
     //movies[i].pause();
