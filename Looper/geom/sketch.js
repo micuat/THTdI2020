@@ -97,13 +97,13 @@ var s = function (p) {
     // p.processCamera(pgTapes[0], pgRenders[6]);
     p.processCamera(pgTapes[1], pgRenders[7]);
     // p.processCameraWithMotion(pgTapes[0], p.captures[0]);
-    p.recordMovie(pgTapes[2], p.movies[0]);
+    // p.recordMovie(pgTapes[2], p.movies[0]);
 
-    // p.renderVideo(pgTapes[0], pgRenders[0], 0);
+    p.renderVideo(pgTapes[0], pgRenders[3], 0);
+    // p.renderVideoDelay(pgTapes[0], pgRenders[0]);
     p.renderVideoDelay(pgTapes[0], pgRenders[0]);
-    p.renderVideoDelay(pgTapes[1], pgRenders[1]);
     // p.renderVideoNormal(pgRenders[0]);
-    p.renderVideo(pgTapes[2], pgRenders[3], 1);
+    // p.renderVideo(pgTapes[2], pgRenders[3], 1);
 
     p.renderBlank(pgRenders[1]);
     p.renderBlank(pgRenders[2]);
@@ -175,8 +175,8 @@ var s = function (p) {
       pg.blendMode(p.ADD);
       pg.tint(255, 255)
       pg.image(capture, 0, 0, width, height);
-      pg.image(capture, 0, 0, width, height);
-      pg.image(capture, 0, 0, width, height);
+      // pg.image(capture, 0, 0, width, height);
+      // pg.image(capture, 0, 0, width, height);
       pg.tint(255, 255)
     }
     else {
@@ -364,8 +364,10 @@ var s = function (p) {
           render.background(255);
           render.blendMode(p.DARKEST);
           render.tint(255);
-          render.image(pgs[(index + pgs.length - 30 * 20) % pgs.length], 0, 0);
-          render.image(pgs[(index + pgs.length - 30 * 0) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J*3) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J*2) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J * -0) % pgs.length], 0, 0);
           render.blendMode(p.BLEND);
         }
         break;
@@ -441,6 +443,9 @@ var s = function (p) {
     let pg = pgs[pgTape.count];
     pg.beginDraw();
     pg.background(0);
+    pg.translate(width / 2, height / 2);
+    pg.scale(2, 2);
+    pg.translate(-width / 2, -height / 2);
     pg.image(movie, 0, 0, width, height);
     pg.endDraw();
 
