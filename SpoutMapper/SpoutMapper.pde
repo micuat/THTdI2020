@@ -1,12 +1,12 @@
 import spout.*;
 Spout[] receivers;
 PGraphics[] canvas;
-int nReceivers = 2;
+int nReceivers = 10;
 
 import deadpixel.keystone.*;
 
-Keystone[] keystones = new Keystone[2];
-CornerPinSurface[] surfaces = new CornerPinSurface[2];
+Keystone[] keystones = new Keystone[nReceivers];
+CornerPinSurface[] surfaces = new CornerPinSurface[nReceivers];
 
 //PGraphics offscreen;
 
@@ -37,8 +37,9 @@ void setup() {
 }
 
 void draw() {
+  blendMode(BLEND);
   background(0);
-
+  blendMode(ADD);
   for (int i = 0; i < surfaces.length; i++) {
     canvas[i] = receivers[i].receiveTexture(canvas[i]);
     surfaces[i].render(canvas[i], 0, 0, canvas[i].width, canvas[i].height);
@@ -47,24 +48,22 @@ void draw() {
 
 void keyPressed() {
   switch(key) {
-  case '1':
+  case 'c':
     keystones[0].toggleCalibration();
-    break;
-
-  case '2':
-    keystones[1].toggleCalibration();
     break;
 
   case 'l':
     // loads the saved layout
-    keystones[0].load("keystone0.xml");
-    keystones[1].load("keystone1.xml");
+    for (int i = 0; i < keystones.length; i++) {
+      keystones[i].load("keystone" + i + ".xml");
+    }
     break;
 
   case 's':
     // saves the layout
-    keystones[0].save("keystone0.xml");
-    keystones[1].save("keystone1.xml");
+    for (int i = 0; i < keystones.length; i++) {
+      keystones[i].save("keystone" + i + ".xml");
+    }
     break;
   }
 }

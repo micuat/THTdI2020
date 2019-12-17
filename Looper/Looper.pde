@@ -38,7 +38,7 @@ import netP5.*;
 
 import spout.*;
 
-public Spout[] spouts = new Spout[4];
+public Spout[] spouts = new Spout[10];
 
 SimpleHTTPServer httpServer;
 

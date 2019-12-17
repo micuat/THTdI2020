@@ -44,7 +44,7 @@ var s = function (p) {
         }
       }
 
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 10; i++) {
         pgRenders[i] = fixedPgs[pgCount++];
       }
     }
@@ -94,9 +94,22 @@ var s = function (p) {
     // p.processCameraWithMotion(pgTapes[0], p.captures[0]);
     //p.recordMovie(pgTapes[1], p.movies[0]);
 
-    p.renderVideo(pgTapes[0], pgRenders[0], 0);
-    p.renderVideo(pgTapes[0], pgRenders[1], 1);
+    // p.renderVideo(pgTapes[0], pgRenders[0], 0);
+    p.renderVideoDelay(pgTapes[0], pgRenders[0]);
+    // p.renderVideoNormal(pgRenders[0]);
+    p.renderVideo(pgTapes[0], pgRenders[3], 1);
 
+    p.renderBlank(pgRenders[1]);
+    p.renderBlank(pgRenders[2]);
+    // p.renderBlank(pgRenders[3]);
+    p.renderBlank(pgRenders[4]);
+    p.renderBlank(pgRenders[5]);
+    p.renderBlank(pgRenders[6]);
+
+    // p.renderNum(pgRenders[0], 0);
+    // p.renderNum(pgRenders[1], 1);
+    // p.renderNum(pgRenders[2], 2);
+    // p.renderNum(pgRenders[3], 3);
     // let pg = pgRenders[1];
     // let pgs = pgTapes[0].tape;
     // pg.beginDraw();
@@ -108,9 +121,14 @@ var s = function (p) {
 
     p.spouts[0].sendTexture(pgRenders[0]);
     p.spouts[1].sendTexture(pgRenders[1]);
+    p.spouts[2].sendTexture(pgRenders[2]);
+    p.spouts[3].sendTexture(pgRenders[3]);
+    // p.spouts[4].sendTexture(pgRenders[4]);
+    // p.spouts[5].sendTexture(pgRenders[5]);
+    // p.spouts[6].sendTexture(pgRenders[6]);
 
     p.image(pgRenders[0], 0, 0); // tape
-    p.image(pgRenders[1], width, 0); // zoom
+    p.image(pgRenders[3], width, 0); // zoom
     p.image(p.captures[0], 0, height); // tape
 
     // p.image(videoCurrent, width, 0);
@@ -149,6 +167,7 @@ var s = function (p) {
       pg.image(capture, 0, 0, width, height);
       pg.blendMode(p.ADD);
       pg.tint(255, 255)
+      pg.image(capture, 0, 0, width, height);
       pg.image(capture, 0, 0, width, height);
       pg.image(capture, 0, 0, width, height);
       pg.tint(255, 255)
@@ -229,6 +248,41 @@ var s = function (p) {
     pgTape.count++;
   }
 
+  p.renderVideoNormal = function (render) {
+    render.beginDraw();
+    render.background(0);
+    render.translate(render.width / 2, render.height / 2);
+    render.scale(1, 1.33333);
+    render.translate(-render.width / 2, -render.height / 2);
+
+    render.image(p.captures[0], 0, 0, width, height);
+    render.blendMode(p.ADD);
+    render.tint(255, 255)
+    render.image(p.captures[0], 0, 0, width, height);
+    render.image(p.captures[0], 0, 0, width, height);
+    render.tint(255, 255)
+    render.endDraw();
+  }
+
+  p.renderBlank = function (render) {
+    render.beginDraw();
+    render.background(0);
+    render.endDraw();
+  }
+
+  p.renderNum = function (render, I) {
+    render.beginDraw();
+    render.background(255, 0, 0);
+    render.push();
+    render.fill(0);
+    render.blendMode(p.BLEND);
+    render.translate(render.width / 2, render.height / 2);
+    render.textFont(font);
+    render.text('' + I, -64, 0);
+    render.pop();
+    render.endDraw();
+  }
+
   p.renderVideo = function (pgTape, render, I) {
     let pgs = pgTape.tape;
     let pg = pgs[index % Math.max(pgTape.count, 1)];
@@ -285,17 +339,18 @@ var s = function (p) {
 
       case 'blendtwo':
         // blend two
+        J = 30;
         if (jsonUi.sliderValues.blendMode == 'blend') {
           render.tint(255, jsonUi.sliderValues.blendTint * 128);
           render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          render.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J * -0) % pgs.length], 0, 0);
         }
         else if (jsonUi.sliderValues.blendMode == 'lightest') {
           render.background(0);
           render.blendMode(p.LIGHTEST);
           render.tint(255);
           render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          render.image(pgs[(index + pgs.length + J * 2) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length + J * -0) % pgs.length], 0, 0);
           render.blendMode(p.BLEND);
         }
         else if (jsonUi.sliderValues.blendMode == 'darkest') {
@@ -314,6 +369,24 @@ var s = function (p) {
         render.image(pg, 0, 0);
         break;
     }
+    render.pop();
+    render.endDraw();
+  }
+
+  
+  p.renderVideoDelay = function (pgTape, render) {
+    let pgs = pgTape.tape;
+    let pg = pgs[index % Math.max(pgTape.count, 1)];
+    render.beginDraw();
+    // p.background(jsonUi.sliderValues.background);
+    render.blendMode(p.BLEND);
+
+    let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
+    render.push();
+
+    // delay
+    render.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
+
     render.pop();
     render.endDraw();
   }
