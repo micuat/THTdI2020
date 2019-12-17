@@ -115,14 +115,14 @@ void setup() {
     // The camera can be initialized directly using an element
     // from the array returned by list():
     captures[0] = new Capture(this, 640, 480, "USB Capture HDMI", 60);
-    //captures[1] = new Capture(this, 640, 480, "Logitech Webcam C925e", 30);
+    captures[1] = new Capture(this, 640, 480, "Logitech Webcam C925e", 30);
     //capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
     // Or, the settings can be defined based on the text in the list
     //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
     
     // Start capturing the images from the camera
     captures[0].start();
-    //captures[1].start();
+    captures[1].start();
   }
   
   movies[0] = new Movie(this, "191217_w.mp4");  
@@ -307,6 +307,13 @@ void movieEvent(Movie m) {
 }
 
 void draw() {
+  if (captures[0].available() == true) {
+    captures[0].read();
+  }
+  if (captures[1].available() == true) {
+    captures[1].read();
+  }
+  
   if (libInited == false) {
     initNashorn();
     try {
