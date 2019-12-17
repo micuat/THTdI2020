@@ -90,32 +90,33 @@ var s = function (p) {
     // if (p.captures[1].available() == true) {
     //   p.captures[1].read();
     // }
-    p.processCameraWithMotion(pgTapes[0], p.captures[0]);
+    p.processCamera(pgTapes[0], p.captures[0]);
+    // p.processCameraWithMotion(pgTapes[0], p.captures[0]);
     //p.recordMovie(pgTapes[1], p.movies[0]);
 
     p.renderVideo(pgTapes[0], pgRenders[0], 0);
-    // p.renderVideo(pgTapes[0], pgRenders[1], 1);
+    p.renderVideo(pgTapes[0], pgRenders[1], 1);
 
-    let pg = pgRenders[1];
-    let pgs = pgTapes[0].tape;
-    pg.beginDraw();
-    // pg.translate(pg.width/2, pg.height/2);
-    pg.translate(AVGX, AVGY);
-    pg.scale(2, 2);
-    pg.translate(-AVGX, -AVGY);
-    // pg.translate(-pg.width/2, -pg.height/2);
-    // pg.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
-    pg.image(videoCurrent, 0, 0)
-    pg.endDraw();
+    // let pg = pgRenders[1];
+    // let pgs = pgTapes[0].tape;
+    // pg.beginDraw();
+    // pg.translate(AVGX, AVGY);
+    // pg.scale(2, 2);
+    // pg.translate(-AVGX, -AVGY);
+    // pg.image(videoCurrent, 0, 0)
+    // pg.endDraw();
 
     p.spouts[0].sendTexture(pgRenders[0]);
     p.spouts[1].sendTexture(pgRenders[1]);
 
-    p.image(pgRenders[0], 0, 0);
+    p.image(pgRenders[0], 0, 0); // tape
+    p.image(pgRenders[1], width, 0); // zoom
+    p.image(p.captures[0], 0, height); // tape
+
     // p.image(videoCurrent, width, 0);
     // p.image(p.movies[0], width, 0, width, height);
-    // p.image(p.captures[0], width, 0);
-    p.image(pgRenders[1], width, 0);
+    // p.image(p.captures[0], 0, 0);
+    // p.image(p.captures[1], width, 0);
 
     let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
@@ -146,6 +147,11 @@ var s = function (p) {
       pg.translate(-pg.width / 2, -pg.height / 2);
 
       pg.image(capture, 0, 0, width, height);
+      pg.blendMode(p.ADD);
+      pg.tint(255, 255)
+      pg.image(capture, 0, 0, width, height);
+      pg.image(capture, 0, 0, width, height);
+      pg.tint(255, 255)
     }
     else {
       pg.translate(pg.width / 2, pg.height / 2);
@@ -196,8 +202,8 @@ var s = function (p) {
         }
       }
       if(avgCount > 0) {
-        AVGX = p.lerp(AVGX, avgX / avgCount, 0.2);
-        AVGY = p.lerp(AVGY, avgY / avgCount, 0.2);
+        AVGX = p.lerp(AVGX, avgX / avgCount, 0.02);
+        AVGY = p.lerp(AVGY, avgY / avgCount, 0.02);
       }
       print(total)
       if (total < th) {
@@ -230,7 +236,7 @@ var s = function (p) {
     // p.background(jsonUi.sliderValues.background);
     render.blendMode(p.BLEND);
 
-    let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
+    let delay = I * Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
     jump += 1 / 30 / 10;//jsonUi.sliderValues.jumpRate;
     let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
     if (isNaN(J) || J < 0) J = 0;
