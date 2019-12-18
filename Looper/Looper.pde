@@ -38,7 +38,10 @@ import netP5.*;
 
 import spout.*;
 
-public Spout[] spouts = new Spout[10];
+public int numInlets = 4;
+public int numOutlets = 8;
+public int numTapes = 4;
+public Spout[] spouts = new Spout[numOutlets];
 public Spout[] receivers;
 
 SimpleHTTPServer httpServer;
@@ -48,9 +51,9 @@ WebsocketServer wsServer;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
-import processing.video.*;
-public Capture[] captures = new Capture[2];
-public Movie[] movies = new Movie[2];
+//import processing.video.*;
+//public Capture[] captures = new Capture[2];
+//public Movie[] movies = new Movie[2];
 
 public PGraphics renderPg;
 
@@ -96,53 +99,53 @@ void setup() {
   oscP5 = new OscP5(this, op);  
   myRemoteLocation = new NetAddress("192.168.0.100", 13000);
 
-  for(int i = 0; i < spouts.length; i++) {
+  for (int i = 0; i < spouts.length; i++) {
     spouts[i] = new Spout(this);
     spouts[i].createSender("Videolooper" + str(i), 640, 480);
   }
-  receivers = new Spout[2];
+  receivers = new Spout[numInlets];
   for (int i = 0; i < receivers.length; i++) { 
     receivers[i] = new Spout(this);
     String sendername = "CameraCapture"+str(i);
     receivers[i].createReceiver(sendername);
   }
 
-  String[] cameras = Capture.list();
+  //String[] cameras = Capture.list();
 
-  if (cameras == null) {
-    println("Failed to retrieve the list of available cameras, will try the default...");
-    captures[0] = new Capture(this, 640, 480);
-  } if (cameras.length == 0) {
-    println("There are no cameras available for capture.");
-    exit();
-  } else {
-    println("Available cameras:");
-    printArray(cameras);
+  //if (cameras == null) {
+  //  println("Failed to retrieve the list of available cameras, will try the default...");
+  //  captures[0] = new Capture(this, 640, 480);
+  //} if (cameras.length == 0) {
+  //  println("There are no cameras available for capture.");
+  //  exit();
+  //} else {
+  //  println("Available cameras:");
+  //  printArray(cameras);
 
-    // The camera can be initialized directly using an element
-    // from the array returned by list():
-    //captures[0] = new Capture(this, 640, 480, "USB Capture HDMI", 60);
-    captures[0] = new Capture(this, 640, 480, "Logitech Webcam C925e", 30);
-    //capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
-    // Or, the settings can be defined based on the text in the list
-    //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
-    
-    // Start capturing the images from the camera
-    captures[0].start();
-    //captures[1].start();
-  }
-  
-  movies[0] = new Movie(this, "191217_bl.mp4");  
-  movies[1] = new Movie(this, "191217_wl.mp4");  
+  //  // The camera can be initialized directly using an element
+  //  // from the array returned by list():
+  //  //captures[0] = new Capture(this, 640, 480, "USB Capture HDMI", 60);
+  //  captures[0] = new Capture(this, 640, 480, "Logitech Webcam C925e", 30);
+  //  //capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
+  //  // Or, the settings can be defined based on the text in the list
+  //  //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
 
-  for(int i = 0; i < movies.length; i++) {
-    movies[i].play();
-    movies[i].jump(0);
-    movies[i].speed(1);
-    movies[i].loop();
-    movies[i].volume(0);
-    //movies[i].pause();
-  }
+  //  // Start capturing the images from the camera
+  //  captures[0].start();
+  //  //captures[1].start();
+  //}
+
+  //movies[0] = new Movie(this, "191217_bl.mp4");  
+  //movies[1] = new Movie(this, "191217_wl.mp4");  
+
+  //for (int i = 0; i < movies.length; i++) {
+  //  movies[i].play();
+  //  movies[i].jump(0);
+  //  movies[i].speed(1);
+  //  movies[i].loop();
+  //  movies[i].volume(0);
+  //  //movies[i].pause();
+  //}
 
   // set the logger level to info
   httpServer.setLoggerLevel(Level.INFO);
@@ -310,22 +313,11 @@ void initNashorn() {
 //  c.read();
 //}
 
-void movieEvent(Movie m) {
-  m.read();
-}
-
-void captureEvent(Capture c) {
-  c.read();
-}
+//void movieEvent(Movie m) {
+//  m.read();
+//}
 
 void draw() {
-  //if (captures[0].available() == true) {
-  //  captures[0].read();
-  //}
-  //if (captures[1].available() == true) {
-  //  captures[1].read();
-  //}
-  
   if (libInited == false) {
     initNashorn();
     try {
@@ -358,8 +350,6 @@ void draw() {
   catch (Exception e) {
     e.printStackTrace();
   }
-  
-  //spout.sendTexture();
 }
 
 private static byte[] encoded;
@@ -456,6 +446,12 @@ public void readFiles(ArrayList<String> paths) throws IOException {
 }
 
 void keyPressed(KeyEvent event) {
+  if (frameCount % 120 == 0) {
+    for (int i = 0; i < receivers.length; i++) { 
+      String sendername = "CameraCapture"+str(i);
+      receivers[i].createReceiver(sendername);
+    }
+  }
   try {
     nashorn.eval("for(var prop in pApplet) {if(!this.isReservedFunction(prop)) {globalSketch[prop] = pApplet[prop]}}");
 
@@ -608,7 +604,7 @@ void oscEvent(OscMessage m) {
   } else if (m.checkTypetag("fffffff")) {
     try {
       String[] ss = new String[7];
-      for(int i = 0; i < 7; i++) {
+      for (int i = 0; i < 7; i++) {
         ss[i] = str(m.get(i).floatValue());
       }
       String s = "\"" + m.addrPattern() + "\"," + join(ss, ",");

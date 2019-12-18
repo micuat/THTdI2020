@@ -1,6 +1,6 @@
 import spout.*;
 
-int nSenders = 2;
+int nSenders = 1;
 PGraphics[] canvas;
 Spout[] senders;
 color[] colors;
@@ -8,6 +8,7 @@ color[] colors;
 import processing.video.*;
 
 Capture[] cam = new Capture[2];
+Capture curCam;
 
 void setup() {
   size(1280, 480, P3D);
@@ -33,7 +34,8 @@ void setup() {
     
     // Start capturing the images from the camera
     cam[0].start();
-    cam[1].start();
+    cam[1].stop();
+    curCam = cam[0];
   }
 
   // Create Spout senders to send frames out.
@@ -53,13 +55,26 @@ void draw() {
   if (cam[1].available() == true) {
     cam[1].read();
   }
-  image(cam[0], 0, 0, width/2, height);
-  image(cam[1], width/2, 0, width/2, height);
+  image(curCam, 0, 0, width/2, height);
+  //image(cam[1], width/2, 0, width/2, height);
   // The following does the same as the above image() line, but 
   // is faster when just drawing the image without any additional 
   // resizing, transformations, or tint.
   //set(0, 0, cam);
   for (int i = 0; i < nSenders; i++) {
-    senders[i].sendTexture(cam[i]);    
+    senders[i].sendTexture(curCam);    
+  }
+}
+
+void keyPressed() {
+  if(key == '1') {
+    cam[0].start();
+    curCam = cam[0];
+    cam[1].stop();
+  }
+  if(key == '2') {
+    cam[1].start();
+    curCam = cam[1];
+    cam[0].stop();
   }
 }

@@ -3,10 +3,11 @@ var height = 480//720;
 
 if (pgTapes == undefined) {
   var pgTapes = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < pApplet.numTapes; i++) {
     pgTapes[i] = { tape: [], count: 0, skipCountdown: 0 };
   }
-  var pgRenders = [];
+  var pgOutlets = [];
+  var pgInlets = [];
 }
 
 var s = function (p) {
@@ -44,8 +45,11 @@ var s = function (p) {
         }
       }
 
-      for (let i = 0; i < 10; i++) {
-        pgRenders[i] = fixedPgs[pgCount++];
+      for (let i = 0; i < p.numOutlets; i++) {
+        pgOutlets[i] = fixedPgs[pgCount++];
+      }
+      for (let i = 0; i < p.numInlets; i++) {
+        pgInlets[i] = fixedPgs[pgCount++];
       }
     }
 
@@ -84,39 +88,31 @@ var s = function (p) {
 
     let t = p.millis() * 0.001;
 
-    // p.receivers[0].receiveTexture(pgRenders[6]);
-    // p.receivers[1].receiveTexture(pgRenders[7]);
-
-    if (p.captures[0].available() == true) {
-      p.captures[0].read();
+    for(let i = 0; i < p.receivers.length; i++) {
+      p.receivers[i].receiveTexture(pgInlets[i]);
     }
-    // if (p.captures[1].available() == true) {
-    //   p.captures[1].read();
-    // }
-    p.processCamera(pgTapes[0], p.captures[0]);
-    // p.processCamera(pgTapes[0], pgRenders[6]);
-    p.processCamera(pgTapes[1], pgRenders[7]);
-    // p.processCameraWithMotion(pgTapes[0], p.captures[0]);
-    // p.recordMovie(pgTapes[2], p.movies[0]);
 
-    p.renderVideo(pgTapes[0], pgRenders[3], 0);
-    // p.renderVideoDelay(pgTapes[0], pgRenders[0]);
-    p.renderVideoDelay(pgTapes[0], pgRenders[0]);
-    // p.renderVideoNormal(pgRenders[0]);
-    // p.renderVideo(pgTapes[2], pgRenders[3], 1);
+    p.processCamera(pgTapes[0], pgInlets[0]);
+    p.processCamera(pgTapes[1], pgInlets[1]);
 
-    p.renderBlank(pgRenders[1]);
-    p.renderBlank(pgRenders[2]);
-    // p.renderBlank(pgRenders[3]);
-    p.renderBlank(pgRenders[4]);
-    p.renderBlank(pgRenders[5]);
-    p.renderBlank(pgRenders[6]);
+    p.renderVideo(pgTapes[0], pgOutlets[3], 0);
+    // p.renderVideoDelay(pgTapes[0], pgOutlets[0]);
+    p.renderVideoDelay(pgTapes[0], pgOutlets[0]);
+    // p.renderVideoNormal(pgOutlets[0]);
+    // p.renderVideo(pgTapes[2], pgOutlets[3], 1);
 
-    // p.renderNum(pgRenders[0], 0);
-    // p.renderNum(pgRenders[1], 1);
-    // p.renderNum(pgRenders[2], 2);
-    // p.renderNum(pgRenders[3], 3);
-    // let pg = pgRenders[1];
+    p.renderBlank(pgOutlets[1]);
+    p.renderBlank(pgOutlets[2]);
+    // p.renderBlank(pgOutlets[3]);
+    p.renderBlank(pgOutlets[4]);
+    p.renderBlank(pgOutlets[5]);
+    p.renderBlank(pgOutlets[6]);
+
+    // p.renderNum(pgOutlets[0], 0);
+    // p.renderNum(pgOutlets[1], 1);
+    // p.renderNum(pgOutlets[2], 2);
+    // p.renderNum(pgOutlets[3], 3);
+    // let pg = pgOutlets[1];
     // let pgs = pgTapes[0].tape;
     // pg.beginDraw();
     // pg.translate(AVGX, AVGY);
@@ -125,23 +121,33 @@ var s = function (p) {
     // pg.image(videoCurrent, 0, 0)
     // pg.endDraw();
 
-    p.spouts[0].sendTexture(pgRenders[0]);
-    p.spouts[1].sendTexture(pgRenders[1]);
-    p.spouts[2].sendTexture(pgRenders[2]);
-    p.spouts[3].sendTexture(pgRenders[3]);
-    // p.spouts[4].sendTexture(pgRenders[4]);
-    // p.spouts[5].sendTexture(pgRenders[5]);
-    // p.spouts[6].sendTexture(pgRenders[6]);
+    for(let i = 0; i < pgOutlets.length; i++) {
+      p.spouts[i].sendTexture(pgOutlets[i]);
+    }
 
-    p.image(pgRenders[0], 0, 0); // tape
-    p.image(pgRenders[3], width, 0); // zoom
-    p.image(pgRenders[6], 0, height);
-    p.image(pgRenders[7], width, height);
+    let ncol = 4;
+    let w = width * 2 / ncol;
+    let h = height * 2 / ncol;
+    for(let i = 0; i < pgInlets.length; i++) {
+      let x = (i % ncol) * w;
+      let y = Math.floor(i / ncol) * h;
+      p.image(pgInlets[i], x, y, w, h); // tape
+      p.text("inlet " + p.str(i), x + 10, y + 10);
+    }
 
-    // p.image(videoCurrent, width, 0);
-    // p.image(p.movies[0], width, 0, width, height);
-    // p.image(p.captures[0], 0, 0);
-    // p.image(p.captures[1], width, 0);
+    for(let i = 0; i < pgTapes.length; i++) {
+      let x = (i % ncol) * w;
+      let y = Math.floor(i / ncol + 1) * h;
+      p.image(pgTapes[i].tape[pgTapes[i].count], x, y, w, h); // tape
+      p.text("tape " + p.str(i), x + 10, y + 10);
+    }
+
+    for(let i = 0; i < pgOutlets.length; i++) {
+      let x = (i % ncol) * w;
+      let y = Math.floor(i / ncol + 2) * h;
+      p.image(pgOutlets[i], x, y, w, h); // tape
+      p.text("outlet " + p.str(i), x + 10, y + 10);
+    }
 
     let T = jsonUi.sliderValues.tUpdate;
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {

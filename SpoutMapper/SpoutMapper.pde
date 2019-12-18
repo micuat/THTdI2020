@@ -43,15 +43,17 @@ void draw() {
   for (int i = 0; i < surfaces.length; i++) {
     canvas[i] = receivers[i].receiveTexture(canvas[i]);
     surfaces[i].render(canvas[i], 0, 0, canvas[i].width, canvas[i].height);
-    
+  }
+}
+
+void keyPressed() {
+  for (int i = 0; i < surfaces.length; i++) {
     if(frameCount % 120 == 0) {
       String sendername = "Videolooper"+str(i);
       receivers[i].createReceiver(sendername);
     }
   }
-}
 
-void keyPressed() {
   switch(key) {
   case 'c':
     keystones[0].toggleCalibration();
