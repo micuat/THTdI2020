@@ -70,6 +70,7 @@ var s = function (p) {
   let jsonUi;
   let AVGX = 0, AVGY = 0;
   p.draw = function () {
+    p.background(0);
     if (setupDone == false) return;
     jsonUi = JSON.parse(p.jsonUiString);
 
@@ -92,8 +93,8 @@ var s = function (p) {
       p.receivers[i].receiveTexture(pgInlets[i]);
     }
 
-    p.processCamera(pgTapes[0], pgInlets[0]);
-    p.processCamera(pgTapes[1], pgInlets[1]);
+    p.processCamera(pgTapes[0], pgInlets[0], false);
+    p.processCamera(pgTapes[1], pgInlets[1], false);
 
     p.renderVideo(pgTapes[0], pgOutlets[3], 0);
     // p.renderVideoDelay(pgTapes[0], pgOutlets[0]);
@@ -166,47 +167,20 @@ var s = function (p) {
     lastT = t;
   }
 
-  p.processCamera = function (pgTape, capture) {
+  p.processCamera = function (pgTape, capture, withMotion) {
     let pgs = pgTape.tape;
-    let pg = pgs[index];
-    pg.beginDraw();
-    pg.blendMode(p.BLEND);
-    pg.background(0);
-    if (jsonUi.sliderValues.debugMode == 'showVideo') {
-      pg.translate(pg.width / 2, pg.height / 2);
-      pg.scale(1, 1.33333);
-      pg.translate(-pg.width / 2, -pg.height / 2);
-
-      pg.image(capture, 0, 0, width, height);
-      pg.blendMode(p.ADD);
-      pg.tint(255, 255)
-      pg.image(capture, 0, 0, width, height);
-      // pg.image(capture, 0, 0, width, height);
-      // pg.image(capture, 0, 0, width, height);
-      pg.tint(255, 255)
+    if(withMotion) {
+      // swap instead of copy for efficiency
+      let temp = videoCurrent;
+      videoCurrent = videoLast;
+      videoLast = temp;
+      videoCurrent.copy(capture, 0, 0, capture.width, capture.height, 0, 0, width, height);
     }
     else {
-      pg.translate(pg.width / 2, pg.height / 2);
-      pg.textFont(font);
-      let x = p.map(Math.floor(index / 10) * 10, 0, pgs.length, -200, 200);
-      pg.text(("00000" + index).slice(-4), x - 64, 0);
+      videoCurrent = capture;
     }
-    pg.endDraw();
-  }
 
-  p.processCameraWithMotion = function (pgTape, capture) {
-    let pgs = pgTape.tape;
-    if (pgTape.count >= pgs.length) {
-      pgTape.count = 0;
-      // return;
-    }
-    // swap instead of copy for efficiency
-    let temp = videoCurrent;
-    videoCurrent = videoLast;
-    videoLast = temp;
-    videoCurrent.copy(capture, 0, 0, capture.width, capture.height, 0, 0, width, height);
-
-    if (pgTape.count == 0) {
+    if (pgTape.count == 0 || !withMotion) {
     }
     else {
       videoCurrent.loadPixels();
@@ -251,14 +225,33 @@ var s = function (p) {
 
     let pg = pgs[pgTape.count];
     pg.beginDraw();
+    pg.blendMode(p.BLEND);
     pg.background(0);
-    pg.translate(pg.width / 2, pg.height / 2);
-    pg.scale(1, 1.33333);
-    pg.translate(-pg.width / 2, -pg.height / 2);
-    pg.image(videoCurrent, 0, 0, width, height);
+    if (jsonUi.sliderValues.debugMode == 'showVideo') {
+      pg.translate(pg.width / 2, pg.height / 2);
+      pg.scale(1, 1.33333);
+      pg.translate(-pg.width / 2, -pg.height / 2);
+
+      pg.image(videoCurrent, 0, 0, width, height);
+      pg.blendMode(p.ADD);
+      pg.tint(255, 255)
+      pg.image(videoCurrent, 0, 0, width, height);
+      // pg.image(capture, 0, 0, width, height);
+      // pg.image(capture, 0, 0, width, height);
+      pg.tint(255, 255)
+    }
+    else {
+      pg.translate(pg.width / 2, pg.height / 2);
+      pg.textFont(font);
+      let x = p.map(Math.floor(pgTape.count / 10) * 10, 0, pgs.length, -200, 200);
+      pg.text(("00000" + pgTape.count).slice(-4), x - 64, 0);
+    }
     pg.endDraw();
 
     pgTape.count++;
+    if (pgTape.count >= pgs.length) {
+      pgTape.count = 0;
+    }
   }
 
   p.renderVideoNormal = function (render) {
@@ -404,58 +397,6 @@ var s = function (p) {
 
     render.pop();
     render.endDraw();
-  }
-
-  p.recordMovie = function (pgTape, movie) {
-    let pgs = pgTape.tape;
-    // if (pgTape.count >= pgs.length) return;
-
-    // // swap instead of copy for efficiency
-    // let temp = videoCurrent;
-    // videoCurrent = videoLast;
-    // videoLast = temp;
-    // videoCurrent.copy(movie, 0, 0, movie.width, movie.height, 0, 0, width, height);
-
-    // if (pgTape.count == 0) {
-    // }
-    // else {
-    //   videoCurrent.loadPixels();
-    //   videoLast.loadPixels();
-    //   let th = 100;
-    //   let total = 0;
-    //   let roi = {x: 0, y: 0, w: width, h: height};
-    //   for (let i = roi.y; i < roi.h; i+=4) {
-    //     for (let j = roi.x; j < roi.w; j+=4) {
-    //       let loc = i * width + j;
-    //       let pixc = videoCurrent.pixels[loc];
-    //       let pixl = videoLast.pixels[loc];
-    //       total += Math.abs(p.red(pixc) - p.red(pixl)) +
-    //       Math.abs(p.green(pixc) - p.green(pixl)) +
-    //       Math.abs(p.blue(pixc) - p.blue(pixl));
-    //     }
-    //   }
-    //   // print(total)
-    //   if (total < th) {
-    //     pgTape.skipCountdown--;
-    //     if (pgTape.skipCountdown <= 0) {
-    //       return;
-    //     }
-    //   }
-    //   else {
-    //     pgTape.skipCountdown = 10;
-    //   }
-    // }
-
-    let pg = pgs[pgTape.count];
-    pg.beginDraw();
-    pg.background(0);
-    pg.translate(width / 2, height / 2);
-    pg.scale(2, 2);
-    pg.translate(-width / 2, -height / 2);
-    pg.image(movie, 0, 0, width, height);
-    pg.endDraw();
-
-    pgTape.count = (pgTape.count + 1) % pgs.length;
   }
 
   p.keyPressed = function() {
