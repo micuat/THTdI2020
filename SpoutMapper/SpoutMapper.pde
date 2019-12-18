@@ -43,6 +43,11 @@ void draw() {
   for (int i = 0; i < surfaces.length; i++) {
     canvas[i] = receivers[i].receiveTexture(canvas[i]);
     surfaces[i].render(canvas[i], 0, 0, canvas[i].width, canvas[i].height);
+    
+    if(frameCount % 120 == 0) {
+      String sendername = "Videolooper"+str(i);
+      receivers[i].createReceiver(sendername);
+    }
   }
 }
 
@@ -64,19 +69,6 @@ void keyPressed() {
     for (int i = 0; i < keystones.length; i++) {
       keystones[i].save("keystone" + i + ".xml");
     }
-    break;
-  
-  case '0':
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-  case '9':
-    receivers[key - '0'].selectSender(); // change that quadrant
     break;
   }
 }
