@@ -70,7 +70,7 @@ public PApplet that = this;
 public String folderName = "";
 public int updateDelayMillis = 5;
 
-boolean libInited = false;
+boolean libInited = false;   
 
 float frameRate() {
   return frameRate;

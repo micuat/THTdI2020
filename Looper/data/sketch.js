@@ -9,6 +9,8 @@ const sliderProperties = {
 	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'blend' },
 	jumpRate: { min: 0, max: 1, default: 1 },
 	tUpdate: { min: 1, max: 20, default: 5 },
+	fader0: { min: 0, max: 255, default: 255 },
+	fader3: { min: 0, max: 255, default: 255 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {

@@ -49,6 +49,7 @@ void setup() {
     movies[i].speed(1);
     movies[i].loop();
     movies[i].volume(0);
+    //movies[i].pause();
   }
 
   // Create Spout senders to send frames out.
@@ -78,8 +79,8 @@ void draw() {
   image(movies[1], w * 2, 0, w, h);
 
   senders[0].sendTexture(curCam);    
-  senders[1].sendTexture(movies[0]);    
-  senders[2].sendTexture(movies[1]);    
+  //senders[1].sendTexture(movies[0]);    
+  //senders[2].sendTexture(movies[1]);    
 }
 
 void keyPressed() {
