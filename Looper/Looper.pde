@@ -51,10 +51,6 @@ WebsocketServer wsServer;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
-//import processing.video.*;
-//public Capture[] captures = new Capture[2];
-//public Movie[] movies = new Movie[2];
-
 public PGraphics renderPg;
 
 private static ScriptEngineManager engineManager;
@@ -109,43 +105,6 @@ void setup() {
     String sendername = "CameraCapture"+str(i);
     receivers[i].createReceiver(sendername);
   }
-
-  //String[] cameras = Capture.list();
-
-  //if (cameras == null) {
-  //  println("Failed to retrieve the list of available cameras, will try the default...");
-  //  captures[0] = new Capture(this, 640, 480);
-  //} if (cameras.length == 0) {
-  //  println("There are no cameras available for capture.");
-  //  exit();
-  //} else {
-  //  println("Available cameras:");
-  //  printArray(cameras);
-
-  //  // The camera can be initialized directly using an element
-  //  // from the array returned by list():
-  //  //captures[0] = new Capture(this, 640, 480, "USB Capture HDMI", 60);
-  //  captures[0] = new Capture(this, 640, 480, "Logitech Webcam C925e", 30);
-  //  //capture = new Capture(this, 1280, 720, "USB Capture HDMI", 60);
-  //  // Or, the settings can be defined based on the text in the list
-  //  //cam = new Capture(this, 640, 480, "Built-in iSight", 30);
-
-  //  // Start capturing the images from the camera
-  //  captures[0].start();
-  //  //captures[1].start();
-  //}
-
-  //movies[0] = new Movie(this, "191217_bl.mp4");  
-  //movies[1] = new Movie(this, "191217_wl.mp4");  
-
-  //for (int i = 0; i < movies.length; i++) {
-  //  movies[i].play();
-  //  movies[i].jump(0);
-  //  movies[i].speed(1);
-  //  movies[i].loop();
-  //  movies[i].volume(0);
-  //  //movies[i].pause();
-  //}
 
   // set the logger level to info
   httpServer.setLoggerLevel(Level.INFO);
@@ -308,14 +267,6 @@ void initNashorn() {
     e.printStackTrace();
   }
 }
-
-//void captureEvent(Capture c) {
-//  c.read();
-//}
-
-//void movieEvent(Movie m) {
-//  m.read();
-//}
 
 void draw() {
   if (libInited == false) {

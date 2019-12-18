@@ -21,6 +21,7 @@ void setup() {
     keystones[i] = new Keystone(this);
     surfaces[i] = keystones[i].createCornerPinSurface(200, 150, 20);
     surfaces[i].moveTo(i * 250, 0);
+    keystones[i].load("keystone" + i + ".xml");
   }
 
   //offscreen = createGraphics(400, 300, P3D);
@@ -48,7 +49,7 @@ void draw() {
 
 void keyPressed() {
   for (int i = 0; i < surfaces.length; i++) {
-    if(frameCount % 120 == 0) {
+    if (frameCount % 120 == 0) {
       String sendername = "Videolooper"+str(i);
       receivers[i].createReceiver(sendername);
     }

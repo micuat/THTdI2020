@@ -1,6 +1,6 @@
 import spout.*;
 
-int nSenders = 1;
+int nSenders = 3;
 PGraphics[] canvas;
 Spout[] senders;
 color[] colors;
@@ -10,8 +10,10 @@ import processing.video.*;
 Capture[] cam = new Capture[2];
 Capture curCam;
 
+public Movie[] movies = new Movie[2];
+
 void setup() {
-  size(1280, 480, P3D);
+  size(960, 240, P3D);
 
   String[] cameras = Capture.list();
 
@@ -38,15 +40,29 @@ void setup() {
     curCam = cam[0];
   }
 
+  movies[0] = new Movie(this, "191217_bl.mp4");  
+  movies[1] = new Movie(this, "191217_wl.mp4");  
+
+  for (int i = 0; i < movies.length; i++) {
+    movies[i].play();
+    movies[i].jump(0);
+    movies[i].speed(1);
+    movies[i].loop();
+    movies[i].volume(0);
+  }
+
   // Create Spout senders to send frames out.
   senders = new Spout[nSenders];
   for (int i = 0; i < nSenders; i++) { 
     senders[i] = new Spout(this);
     String sendername = "CameraCapture"+i;
-    senders[i].createSender(sendername, 320, 180);
+    senders[i].createSender(sendername, 640, 480);
   }
 }
 
+void movieEvent(Movie m) {
+  m.read();
+}
 
 void draw() {
   if (cam[0].available() == true) {
@@ -55,15 +71,15 @@ void draw() {
   if (cam[1].available() == true) {
     cam[1].read();
   }
-  image(curCam, 0, 0, width/2, height);
-  //image(cam[1], width/2, 0, width/2, height);
-  // The following does the same as the above image() line, but 
-  // is faster when just drawing the image without any additional 
-  // resizing, transformations, or tint.
-  //set(0, 0, cam);
-  for (int i = 0; i < nSenders; i++) {
-    senders[i].sendTexture(curCam);    
-  }
+  int w = 320;
+  int h = 240;
+  image(curCam, 0, 0, w, h);
+  image(movies[0], w, 0, w, h);
+  image(movies[1], w * 2, 0, w, h);
+
+  senders[0].sendTexture(curCam);    
+  senders[1].sendTexture(movies[0]);    
+  senders[2].sendTexture(movies[1]);    
 }
 
 void keyPressed() {

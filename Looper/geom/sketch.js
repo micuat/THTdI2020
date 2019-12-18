@@ -102,12 +102,12 @@ var s = function (p) {
     // p.renderVideoNormal(pgOutlets[0]);
     // p.renderVideo(pgTapes[2], pgOutlets[3], 1);
 
-    p.renderBlank(pgOutlets[1]);
-    p.renderBlank(pgOutlets[2]);
+    // p.renderBlank(pgOutlets[1]);
+    // p.renderBlank(pgOutlets[2]);
     // p.renderBlank(pgOutlets[3]);
-    p.renderBlank(pgOutlets[4]);
-    p.renderBlank(pgOutlets[5]);
-    p.renderBlank(pgOutlets[6]);
+    // p.renderBlank(pgOutlets[4]);
+    // p.renderBlank(pgOutlets[5]);
+    // p.renderBlank(pgOutlets[6]);
 
     // p.renderNum(pgOutlets[0], 0);
     // p.renderNum(pgOutlets[1], 1);
