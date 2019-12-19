@@ -120,10 +120,24 @@ var s = function (p) {
     p.renderVideo(pgTapes[0], pgOutlets[0], 0, 'fall', jsonUi.sliderValues.fader3);
     // p.renderVideo(pgTapes[0], pgOutlets[0], 1, 'delayStretch', jsonUi.sliderValues.fader0);
 
-    // let fade = Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
-    // p.renderBlank(pgOutlets[0], 200 * fade, 200 * fade, 255 * fade);
-    // fade = -Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
-    // p.renderBlank(pgOutlets[3], 200 * fade, 200 * fade, 255 * fade);
+    // if (t % 60 < 30) {
+    //   let fade = -Math.cos((t % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
+    //   p.renderBlank(pgOutlets[0], 0, 0, 0, fade * 255);
+    // }
+    // if ((t+30) % 60 < 30) {
+    //   let fade = -Math.cos(((t+30) % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
+    //   p.renderBlank(pgOutlets[3], 0, 0, 0, fade * 255);
+    // }
+    {
+      let fade = -Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
+      p.renderBlank(pgOutlets[0]);
+      p.renderBlank(pgOutlets[0], 200, 200, 255, fade * 255);
+    }
+    {
+      let fade = Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
+      p.renderBlank(pgOutlets[3]);
+      p.renderBlank(pgOutlets[3], 200, 200, 255, fade * 255);
+    }
     p.renderBlank(pgOutlets[1]);
     p.renderBlank(pgOutlets[2]);
     // p.renderBlank(pgOutlets[3]);
@@ -280,14 +294,18 @@ var s = function (p) {
     }
   }
 
-  p.renderBlank = function (render, r, g, b) {
+  p.renderBlank = function (render, r, g, b, a) {
     render.beginDraw();
+    render.push();
     if(r == undefined) {
       render.background(0);
     }
     else {
-      render.background(r, g, b);
+      render.fill(r, g, b, a);
+      render.noStroke();
+      render.rect(0, 0, width, height);
     }
+    render.pop();
     render.endDraw();
   }
 
