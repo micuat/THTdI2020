@@ -40,7 +40,7 @@ import spout.*;
 
 public int numInlets = 4;
 public int numOutlets = 8;
-public int numTapes = 4;
+public int numTapes = 2;
 public Spout[] spouts = new Spout[numOutlets];
 public Spout[] receivers;
 

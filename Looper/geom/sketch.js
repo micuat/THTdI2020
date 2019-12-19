@@ -21,11 +21,8 @@ var s = function (p) {
   let videoCurrent, videoLast;
 
   p.setup = function () {
-    if (fixedPgs == undefined) {
-      var fixedPgs = [];
-      for (let i = 0; i < 2500; i++) {
-        fixedPgs[i] = p001.createGraphics(width, height, p001.P3D);
-      }
+    if (p.fixedPgs == undefined) {
+      p.fixedPgs = [];
     }
 
     p.createCanvas(width * 2, height * 2)
@@ -37,21 +34,32 @@ var s = function (p) {
     for (let i = 0; i < pgTapes.length; i++) {
       pgTapes[i].count = 0;
     }
-    if (pgTapes[0].tape.length != length) {
-      for (let i = 0; i < pgTapes.length; i++) {
-        pgTapes[i].tape = [];
-        for (let j = 0; j < length; j++) {
-          pgTapes[i].tape.push(fixedPgs[pgCount++]);
+    for (let i = 0; i < pgTapes.length; i++) {
+      pgTapes[i].tape = [];
+      for (let j = 0; j < length; j++) {
+        if(p.fixedPgs[pgCount] == undefined) {
+          p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
         }
-      }
-
-      for (let i = 0; i < p.numOutlets; i++) {
-        pgOutlets[i] = fixedPgs[pgCount++];
-      }
-      for (let i = 0; i < p.numInlets; i++) {
-        pgInlets[i] = fixedPgs[pgCount++];
+        pgTapes[i].tape.push(p.fixedPgs[pgCount]);
+        pgCount++;
       }
     }
+
+    for (let i = 0; i < p.numOutlets; i++) {
+      if(p.fixedPgs[pgCount] == undefined) {
+        p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
+      }
+      pgOutlets[i] = p.fixedPgs[pgCount];
+      pgCount++;
+    }
+    for (let i = 0; i < p.numInlets; i++) {
+      if(p.fixedPgs[pgCount] == undefined) {
+        p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
+      }
+      pgInlets[i] = p.fixedPgs[pgCount];
+      pgCount++;
+    }
+    print('using ' + pgCount + ' pgraphics');
 
     videoCurrent = p.createImage(width, height, p.RGB);
     videoLast = p.createImage(width, height, p.RGB);
@@ -97,16 +105,16 @@ var s = function (p) {
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
     p.processCamera(pgTapes[1], pgInlets[1], false);
-    p.processCamera(pgTapes[2], pgInlets[2], false);
+    // p.processCamera(pgTapes[2], pgInlets[2], false);
 
-    // p.renderVideoScale(pgTapes[0], pgOutlets[1], 0);
-    // p.renderVideoScale(pgTapes[1], pgOutlets[4], 1);
-    // p.renderVideoScale(pgTapes[1], pgOutlets[5], 1);
+    p.renderVideoScale(pgTapes[0], pgOutlets[1], 0);
+    p.renderVideoScale(pgTapes[1], pgOutlets[4], 1);
+    p.renderVideoScale(pgTapes[1], pgOutlets[5], 1);
     // p.renderVideoScale(pgTapes[2], pgOutlets[6], 1);
-    // p.renderVideoScale(pgTapes[1], pgOutlets[2], 1);
+    p.renderVideoScale(pgTapes[1], pgOutlets[2], 1);
 
     p.renderVideo(pgTapes[0], pgOutlets[3], 0, jsonUi.sliderValues.fader3);
-    p.renderVideoScale(pgTapes[1], pgOutlets[0], 2);
+    p.renderVideoScale(pgTapes[0], pgOutlets[0], 2);
     // p.renderVideoDelay(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.fader0);
     // p.renderVideoNormal(pgOutlets[0]);
     // p.renderVideo(pgTapes[2], pgOutlets[3], 1);
