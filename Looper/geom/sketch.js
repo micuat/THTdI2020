@@ -116,10 +116,8 @@ var s = function (p) {
     p.renderVideoScale(pgTapes[1], pgOutlets[2], 1);
 
     p.renderVideo(pgTapes[0], pgOutlets[3], 0, jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader3);
-    // p.renderVideoScale(pgTapes[0], pgOutlets[0], 2);
-    p.renderVideo(pgTapes[0], pgOutlets[0], 01, 'delayStretch', jsonUi.sliderValues.fader0);
-    // p.renderVideoDelay(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.fader0);
-    // p.renderVideo(pgTapes[2], pgOutlets[3], 1);
+    p.renderVideo(pgTapes[0], pgOutlets[0], 0, 'fall', jsonUi.sliderValues.fader3);
+    // p.renderVideo(pgTapes[0], pgOutlets[0], 1, 'delayStretch', jsonUi.sliderValues.fader0);
 
     // let fade = Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
     // p.renderBlank(pgOutlets[0], 200 * fade, 200 * fade, 255 * fade);
@@ -175,8 +173,10 @@ var s = function (p) {
     }
 
     let T = jsonUi.sliderValues.tUpdate;
-    if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
+    if (Math.floor(t / 5) - Math.floor(lastT / 5) > 0) {
       print(p.frameRate());
+    }
+    if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
       if (jsonUi.sliderValues.frameMode == 'fall') {
         jumpLast = index;
       }
@@ -310,7 +310,21 @@ var s = function (p) {
     render.blendMode(p.BLEND);
 
     let delay = I * Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
-    jump += 1 / 30 / 10;//jsonUi.sliderValues.jumpRate;
+    jump += 1 / 30 / 5;//jsonUi.sliderValues.jumpRate;
+    let jumpFader = 0;
+    if (jump < 0.3) {
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.3, 0, 1));
+    }
+    else if (jump < 0.7) {
+      jumpFader = 1;
+    }
+    else if (jump < 1) {
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0.7, 1, 1, 0));
+    }
+    else {
+      jumpFader = 0;
+    }
+
     let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
     if (isNaN(J) || J < 0) J = 0;
     render.push();
@@ -347,20 +361,13 @@ var s = function (p) {
 
       case 'fall':
         // fall
-        if (jump > 1) jump = 1;
-        render.image(pgs[jumpLast % pgs.length], 0, 0);
-        render.tint(fader, jump * 255);
-        // if (jsonUi.sliderValues.blendMode == 'blend') {
-        // }
-        // else if (jsonUi.sliderValues.blendMode == 'lightest') {
-        //   render.tint(jump * 255, 255);
-        //   render.blendMode(p.LIGHTEST);
-        // }
-        // else if (jsonUi.sliderValues.blendMode == 'darkest') {
-        //   render.tint((1 - jump) * 255, 255);
-        //   render.blendMode(p.DARKEST);
-        // }
-        render.image(pgs[index], 0, 0);
+        J = 150;
+        render.background(0);
+        render.blendMode(p.LIGHTEST);
+        render.tint(fader);
+        render.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
+        render.tint(fader * jumpFader);
+        render.image(pgs[(index + pgs.length - J) % pgs.length], 0, 0);
         render.blendMode(p.BLEND);
         break;
 
