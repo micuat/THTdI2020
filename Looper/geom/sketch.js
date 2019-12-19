@@ -77,6 +77,7 @@ var s = function (p) {
   let jump = 0;
   let jumpTarget = 0;
   let jumpLast = 0;
+  let jumpStart = 0;
   let jsonUi;
   let AVGX = 0, AVGY = 0;
   p.draw = function () {
@@ -93,7 +94,7 @@ var s = function (p) {
         blendTint: 0.3,
         blendMode: 'lightest',
         jumpRate: 0.1,
-        tUpdate: 5,
+        tUpdate: 30,
         fader0: 255,
         fader3: 255,
       }
@@ -177,6 +178,7 @@ var s = function (p) {
       print(p.frameRate());
     }
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
+      jumpStart = t;
       if (jsonUi.sliderValues.frameMode == 'fall') {
         jumpLast = index;
       }
@@ -310,19 +312,34 @@ var s = function (p) {
     render.blendMode(p.BLEND);
 
     let delay = I * Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
-    jump += 1 / 30 / 5;//jsonUi.sliderValues.jumpRate;
-    let jumpFader = 0;
-    if (jump < 0.3) {
-      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.3, 0, 1));
+    jump = (p.millis() * 0.001 - jumpStart) / 30;//jsonUi.sliderValues.jumpRate;
+    let jumpFader0 = 0;
+    let jumpFader1 = 0;
+    if (jump < 0.2) {
+      jumpFader0 = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.2, 0, 1));
     }
-    else if (jump < 0.7) {
-      jumpFader = 1;
+    else if (jump < 0.8) {
+      jumpFader0 = 1;
     }
     else if (jump < 1) {
-      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0.7, 1, 1, 0));
+      jumpFader0 = EasingFunctions.easeInOutCubic(p.map(jump, 0.8, 1, 1, 0));
     }
     else {
-      jumpFader = 0;
+      jumpFader0 = 0;
+    }
+
+    jump = ((p.millis() * 0.001 - jumpStart + 15) % 30) / 30;//jsonUi.sliderValues.jumpRate;
+    if (jump < 0.2) {
+      jumpFader1 = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.2, 0, 1));
+    }
+    else if (jump < 0.8) {
+      jumpFader1 = 1;
+    }
+    else if (jump < 1) {
+      jumpFader1 = EasingFunctions.easeInOutCubic(p.map(jump, 0.8, 1, 1, 0));
+    }
+    else {
+      jumpFader1 = 0;
     }
 
     let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
@@ -330,7 +347,7 @@ var s = function (p) {
     render.push();
     render.tint(fader);
 
-    let stretchT = 120;
+    let stretchT = 300;
     let delayStretch = Math.floor(599 * EasingFunctions.easeInOutCubic(p.constrain(p.map((p.millis() * 0.001 - startT), 0, stretchT, 0, 1), 0, 1)));
     switch (mode) {
       case 'delay':
@@ -361,12 +378,12 @@ var s = function (p) {
 
       case 'fall':
         // fall
-        J = 150;
+        J = 599;
         render.background(0);
         render.blendMode(p.LIGHTEST);
-        render.tint(fader);
+        render.tint(fader * jumpFader0);
         render.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
-        render.tint(fader * jumpFader);
+        render.tint(fader * jumpFader1);
         render.image(pgs[(index + pgs.length - J) % pgs.length], 0, 0);
         render.blendMode(p.BLEND);
         break;
