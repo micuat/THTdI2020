@@ -49,7 +49,7 @@ void setup() {
     movies[i].speed(1);
     movies[i].loop();
     movies[i].volume(0);
-    //movies[i].pause();
+    movies[i].pause();
   }
 
   // Create Spout senders to send frames out.

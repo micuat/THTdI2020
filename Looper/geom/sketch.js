@@ -13,6 +13,7 @@ if (pgTapes == undefined) {
 var s = function (p) {
   let index = 0;
   let lastT = 0;
+  let startT = 0;
 
   let font;
 
@@ -24,6 +25,7 @@ var s = function (p) {
     if (p.fixedPgs == undefined) {
       p.fixedPgs = [];
     }
+    startT = p.millis() * 0.001;
 
     p.createCanvas(width * 2, height * 2)
     p.frameRate(30);
@@ -85,11 +87,11 @@ var s = function (p) {
     if (jsonUi.sliderValues == undefined) {
       jsonUi.sliderValues = {
         background: 0,
-        delayFrame: 30,
+        delayFrame: 599,
         debugMode: 'showVideo',
-        frameMode: 'normal',
+        frameMode: 'blendtwo',
         blendTint: 0.3,
-        blendMode: 'blend',
+        blendMode: 'lightest',
         jumpRate: 0.1,
         tUpdate: 5,
         fader0: 255,
@@ -104,7 +106,7 @@ var s = function (p) {
     }
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
-    p.processCamera(pgTapes[1], pgInlets[1], false);
+    // p.processCamera(pgTapes[1], pgInlets[1], false);
     // p.processCamera(pgTapes[2], pgInlets[2], false);
 
     p.renderVideoScale(pgTapes[0], pgOutlets[1], 0);
@@ -114,15 +116,14 @@ var s = function (p) {
     p.renderVideoScale(pgTapes[1], pgOutlets[2], 1);
 
     p.renderVideo(pgTapes[0], pgOutlets[3], 0, jsonUi.sliderValues.fader3);
-    p.renderVideoScale(pgTapes[0], pgOutlets[0], 2);
-    // p.renderVideoDelay(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.fader0);
-    // p.renderVideoNormal(pgOutlets[0]);
+    // p.renderVideoScale(pgTapes[0], pgOutlets[0], 2);
+    p.renderVideoDelay(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.fader0);
     // p.renderVideo(pgTapes[2], pgOutlets[3], 1);
 
-    let fade = Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
-    p.renderBlank(pgOutlets[0], 200 * fade, 200 * fade, 255 * fade);
-    fade = -Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
-    p.renderBlank(pgOutlets[3], 200 * fade, 200 * fade, 255 * fade);
+    // let fade = Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
+    // p.renderBlank(pgOutlets[0], 200 * fade, 200 * fade, 255 * fade);
+    // fade = -Math.sin(t * 0.1 * Math.PI) * 0.25 + 0.75
+    // p.renderBlank(pgOutlets[3], 200 * fade, 200 * fade, 255 * fade);
     p.renderBlank(pgOutlets[1]);
     p.renderBlank(pgOutlets[2]);
     // p.renderBlank(pgOutlets[3]);
@@ -257,7 +258,7 @@ var s = function (p) {
       pg.image(videoCurrent, 0, 0, width, height);
       pg.blendMode(p.ADD);
       pg.tint(255, 255)
-      pg.image(videoCurrent, 0, 0, width, height);
+      // pg.image(videoCurrent, 0, 0, width, height);
       // pg.image(capture, 0, 0, width, height);
       // pg.image(capture, 0, 0, width, height);
       pg.tint(255, 255)
@@ -274,22 +275,6 @@ var s = function (p) {
     if (pgTape.count >= pgs.length) {
       pgTape.count = 0;
     }
-  }
-
-  p.renderVideoNormal = function (render) {
-    render.beginDraw();
-    render.background(0);
-    render.translate(render.width / 2, render.height / 2);
-    render.scale(1, 1.33333);
-    render.translate(-render.width / 2, -render.height / 2);
-
-    render.image(p.captures[0], 0, 0, width, height);
-    render.blendMode(p.ADD);
-    render.tint(255, 255)
-    render.image(p.captures[0], 0, 0, width, height);
-    render.image(p.captures[0], 0, 0, width, height);
-    render.tint(255, 255)
-    render.endDraw();
   }
 
   p.renderBlank = function (render, r, g, b) {
@@ -335,6 +320,10 @@ var s = function (p) {
         render.image(pgs[(index + pgs.length - delay * (I + 1)) % pgs.length], 0, 0);
         break;
 
+      case 'delayStretch':
+        render.image(pgs[(index + pgs.length - delay * (I + 1)) % pgs.length], 0, 0);
+        break;
+  
       case 'random':
         // random
         render.image(p.random(pgs), 0, 0);
@@ -373,7 +362,7 @@ var s = function (p) {
 
       case 'blendtwo':
         // blend two
-        J = 30;
+        J = 300;
         if (jsonUi.sliderValues.blendMode == 'blend') {
           render.tint(255, fader * jsonUi.sliderValues.blendTint * 128);
           render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
@@ -383,16 +372,14 @@ var s = function (p) {
           render.background(0);
           render.blendMode(p.LIGHTEST);
           render.tint(fader);
-          render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
-          render.image(pgs[(index + pgs.length + J * -0) % pgs.length], 0, 0);
+          render.image(pgs[(index + pgs.length - J) % pgs.length], width*0.0, 0);
+          render.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
           render.blendMode(p.BLEND);
         }
         else if (jsonUi.sliderValues.blendMode == 'darkest') {
           render.background(255);
           render.blendMode(p.DARKEST);
           render.tint(fader);
-          render.image(pgs[(index + pgs.length + J*3) % pgs.length], 0, 0);
-          render.image(pgs[(index + pgs.length + J*2) % pgs.length], 0, 0);
           render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
           render.image(pgs[(index + pgs.length + J * -0) % pgs.length], 0, 0);
           render.blendMode(p.BLEND);
