@@ -95,6 +95,24 @@ const presets = [
 		}
 	},
 	{
+		name: 'delay-in',
+		sliders: {
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 255, t: 60 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 0, t: 1 },
+		}
+	},
+	{
+		name: 'blend-in',
+		sliders: {
+			fader10: { val: 0, t: 1 },
+			fader11: { val: 0, t: 1 },
+			fader12: { val: 0, t: 1 },
+			fader13: { val: 255, t: 60 },
+		}
+	},
+	{
 		name: 'delay-blend',
 		sliders: {
 			fader00: { val: 0, t: 1 },

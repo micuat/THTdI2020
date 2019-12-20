@@ -254,7 +254,7 @@ var s = function (p) {
     let T = jsonUi.sliderValues.tUpdate;
     let jump = ((p.millis() * 0.001 + offset) % T) / T;
     let jumpFader = 0;
-    let fadeT = 2;
+    let fadeT = T / 4;
     let fadeR = fadeT / T;
     if (jump < fadeR) {
       jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, fadeR, 0, 1));
