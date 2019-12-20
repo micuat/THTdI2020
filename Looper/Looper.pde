@@ -39,7 +39,8 @@ import netP5.*;
 import spout.*;
 
 public int numInlets = 4;
-public int numOutlets = 8;
+public int numOutlets = 4;
+public int numInters = 4;
 public int numTapes = 2;
 public Spout[] spouts = new Spout[numOutlets];
 public Spout[] receivers;

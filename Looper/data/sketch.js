@@ -3,66 +3,90 @@ let ws = new WebSocket('ws://localhost:8035/staebe');
 const sliderProperties = {
 	delayFrame: { min: 0, max: 600, default: 599 },
 	debugMode: { radio: ['showVideo', 'showDigits'], default: 'showVideo' },
-	frameMode0: { radio: ['normal', 'delay', 'fall', 'blendtwo'], default: 'delay' },
-	frameMode1: { radio: ['normal', 'delay', 'fall', 'blendtwo'], default: 'blendtwo' },
+	// frameMode0: { radio: ['normal', 'delay', 'fall', 'blendtwo'], default: 'delay' },
+	// frameMode1: { radio: ['normal', 'delay', 'fall', 'blendtwo'], default: 'blendtwo' },
 	blendTint: { min: 0, max: 1, default: 0.3 },
 	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'lightest' },
 	tUpdate: { min: 1, max: 60, default: 30 },
-	fader0: { min: 0, max: 255, default: 255 },
-	fader1: { min: 0, max: 255, default: 255 },
+	fader00: { min: 0, max: 255, default: 255 },
+	fader01: { min: 0, max: 255, default: 255 },
+	fader02: { min: 0, max: 255, default: 255 },
+	fader03: { min: 0, max: 255, default: 255 },
+	fader10: { min: 0, max: 255, default: 255 },
+	fader11: { min: 0, max: 255, default: 255 },
+	fader12: { min: 0, max: 255, default: 255 },
+	fader13: { min: 0, max: 255, default: 255 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {
 	sliderValues[key] = sliderProperties[key].default;
 }
 const presets = [
-	{
-		name: 'blank',
-		sliders: {
-			fader0: { val: 0, t: 1 },
-			fader1: { val: 0, t: 1 },
-		}
-	},
-	{
-		name: 'all',
-		sliders: {
-			fader0: { val: 255, t: 1 },
-			fader1: { val: 255, t: 1 },
-		}
-	},
-	{
-		name: 'solo0',
-		sliders: {
-			fader0: { val: 255, t: 1 },
-			fader1: { val: 0, t: 1 },
-		}
-	},
-	{
-		name: 'solo1',
-		sliders: {
-			fader0: { val: 0, t: 1 },
-			fader1: { val: 255, t: 1 },
-		}
-	},
+	// {
+	// 	name: 'blank',
+	// 	sliders: {
+	// 		fader0: { val: 0, t: 1 },
+	// 		fader1: { val: 0, t: 1 },
+	// 	}
+	// },
+	// {
+	// 	name: 'all',
+	// 	sliders: {
+	// 		fader0: { val: 255, t: 1 },
+	// 		fader1: { val: 255, t: 1 },
+	// 	}
+	// },
+	// {
+	// 	name: 'solo0',
+	// 	sliders: {
+	// 		fader0: { val: 255, t: 1 },
+	// 		fader1: { val: 0, t: 1 },
+	// 	}
+	// },
+	// {
+	// 	name: 'solo1',
+	// 	sliders: {
+	// 		fader0: { val: 0, t: 1 },
+	// 		fader1: { val: 255, t: 1 },
+	// 	}
+	// },
 	{
 		name: 'real-real',
 		sliders: {
-			frameMode0: { val: 'normal', t: 1 },
-			frameMode1: { val: 'normal', t: 1 },
+			fader00: { val: 255, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader10: { val: 255, t: 1 },
+			fader11: { val: 0, t: 1 },
+			fader12: { val: 0, t: 1 },
+			fader13: { val: 0, t: 1 },
 		}
 	},
 	{
 		name: 'delay-blend',
 		sliders: {
-			frameMode0: { val: 'delay', t: 1 },
-			frameMode1: { val: 'blendtwo', t: 1 },
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 255, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader10: { val: 0, t: 1 },
+			fader11: { val: 0, t: 1 },
+			fader12: { val: 0, t: 1 },
+			fader13: { val: 255, t: 1 },
 		}
 	},
 	{
 		name: 'fall-blend',
 		sliders: {
-			frameMode0: { val: 'fall', t: 1 },
-			frameMode1: { val: 'blendtwo', t: 1 },
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 255, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader10: { val: 0, t: 1 },
+			fader11: { val: 0, t: 1 },
+			fader12: { val: 0, t: 1 },
+			fader13: { val: 255, t: 1 },
 		}
 	},
 ];

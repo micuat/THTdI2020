@@ -8,6 +8,7 @@ if (pgTapes == undefined) {
   }
   var pgOutlets = [];
   var pgInlets = [];
+  var pgInters = [];
 }
 
 var s = function (p) {
@@ -61,6 +62,14 @@ var s = function (p) {
       pgInlets[i] = p.fixedPgs[pgCount];
       pgCount++;
     }
+    for (let i = 0; i < p.numInters; i++) {
+      if(p.fixedPgs[pgCount] == undefined) {
+        p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
+      }
+      pgInters[i] = p.fixedPgs[pgCount];
+      p.renderBlank(pgInters[i]);
+      pgCount++;
+    }
     print('using ' + pgCount + ' pgraphics');
   }
 
@@ -77,8 +86,14 @@ var s = function (p) {
         blendTint: 0.3,
         blendMode: 'lightest',
         tUpdate: 30,
-        fader0: 255,
-        fader1: 255,
+        fader00: 255,
+        fader01: 255,
+        fader02: 255,
+        fader03: 255,
+        fader10: 255,
+        fader11: 255,
+        fader12: 255,
+        fader13: 255,
       }
     }
 
@@ -90,8 +105,20 @@ var s = function (p) {
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
 
-    p.renderVideo(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.frameMode0, jsonUi.sliderValues.fader0);
-    p.renderVideo(pgTapes[0], pgOutlets[1], jsonUi.sliderValues.frameMode1, jsonUi.sliderValues.fader1);
+    p.renderVideo(pgTapes[0], pgInters[0], 'normal', 255);
+    p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
+    p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
+    p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
+
+    for (let j = 0; j < 2; j++) {
+      pgOutlets[j].beginDraw();
+      pgOutlets[j].background(0);
+      for (let i = 0; i < 4; i++) {
+        pgOutlets[j].tint(255, jsonUi.sliderValues['fader' + j + i]);
+        pgOutlets[j].image(pgInters[i], 0, 0);
+      }
+      pgOutlets[j].endDraw();
+    }
 
     // black
     // if (t % 60 < 30) {
@@ -138,9 +165,16 @@ var s = function (p) {
       p.text("tape " + p.str(i), x + 10, y + 10);
     }
 
-    for(let i = 0; i < pgOutlets.length; i++) {
+    for(let i = 0; i < pgInters.length; i++) {
       let x = (i % ncol) * w;
       let y = Math.floor(i / ncol + 2) * h;
+      p.image(pgInters[i], x, y, w, h); // tape
+      p.text("inter " + p.str(i), x + 10, y + 10);
+    }
+
+    for(let i = 0; i < pgOutlets.length; i++) {
+      let x = (i % ncol) * w;
+      let y = Math.floor(i / ncol + 3) * h;
       p.image(pgOutlets[i], x, y, w, h); // tape
       p.text("outlet " + p.str(i), x + 10, y + 10);
     }
