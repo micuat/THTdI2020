@@ -1,13 +1,11 @@
 let ws = new WebSocket('ws://localhost:8035/staebe');
 
 const sliderProperties = {
-	background: { min: 0, max: 255, default: 255 },
-	delayFrame: { min: 0, max: 600, default: 0 },
+	delayFrame: { min: 0, max: 600, default: 599 },
 	debugMode: { radio: ['showVideo', 'showDigits'], default: 'showVideo' },
-	frameMode: { radio: ['normal', 'delay', 'random', 'noise', 'jump', 'fall', 'blendtwo'], default: 'blendtwo' },
+	frameMode: { radio: ['normal', 'delay', 'fall', 'blendtwo'], default: 'delay' },
 	blendTint: { min: 0, max: 1, default: 0.3 },
 	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'lightest' },
-	jumpRate: { min: 0, max: 1, default: 1 },
 	tUpdate: { min: 1, max: 60, default: 30 },
 	fader0: { min: 0, max: 255, default: 255 },
 	fader3: { min: 0, max: 255, default: 255 },
@@ -17,18 +15,18 @@ for (const key in sliderProperties) {
 	sliderValues[key] = sliderProperties[key].default;
 }
 const presets = [
-	{
-		name: 'blank',
-		display: 'Blank',
-		sliders: { background: { val: 255, t: 1 } }
-	},
-	{
-		name: 'grid',
-		display: 'Grid',
-		sliders: {
-			background: { val: 255, t: 1 },
-		}
-	},
+	// {
+	// 	name: 'blank',
+	// 	display: 'Blank',
+	// 	sliders: { fader0: { val: 255, t: 1 } }
+	// },
+	// {
+	// 	name: 'grid',
+	// 	display: 'Grid',
+	// 	sliders: {
+	// 		fader0: { val: 255, t: 1 },
+	// 	}
+	// },
 ];
 
 var gui = new dat.gui.GUI();

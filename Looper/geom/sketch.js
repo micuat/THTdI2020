@@ -70,13 +70,11 @@ var s = function (p) {
 
     if (jsonUi.sliderValues == undefined) {
       jsonUi.sliderValues = {
-        background: 0,
         delayFrame: 599,
         debugMode: 'showVideo',
-        frameMode: 'blendtwo',
+        frameMode: 'delay',
         blendTint: 0.3,
         blendMode: 'lightest',
-        jumpRate: 0.1,
         tUpdate: 30,
         fader0: 255,
         fader3: 255,
@@ -91,8 +89,8 @@ var s = function (p) {
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
 
-    p.renderVideo(pgTapes[0], pgOutlets[0], 'fall', jsonUi.sliderValues.fader0);
-    p.renderVideo(pgTapes[0], pgOutlets[3], jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader3);
+    p.renderVideo(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader0);
+    p.renderVideo(pgTapes[0], pgOutlets[3], 'blendtwo', jsonUi.sliderValues.fader3);
 
     // black
     // if (t % 60 < 30) {
