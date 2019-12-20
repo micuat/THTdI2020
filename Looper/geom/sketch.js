@@ -165,11 +165,12 @@ var s = function (p) {
       p.text("tape " + p.str(i), x + 10, y + 10);
     }
 
+    let names = ['normal', 'delay', 'fall', 'blendtwo'];
     for(let i = 0; i < pgInters.length; i++) {
       let x = (i % ncol) * w;
       let y = Math.floor(i / ncol + 2) * h;
       p.image(pgInters[i], x, y, w, h); // tape
-      p.text("inter " + p.str(i), x + 10, y + 10);
+      p.text("inter " + names[i], x + 10, y + 10);
     }
 
     for(let i = 0; i < pgOutlets.length; i++) {

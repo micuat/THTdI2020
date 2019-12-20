@@ -51,6 +51,37 @@ const presets = [
 	// 	}
 	// },
 	{
+		name: 'blank',
+		sliders: {
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader10: { val: 0, t: 1 },
+			fader11: { val: 0, t: 1 },
+			fader12: { val: 0, t: 1 },
+			fader13: { val: 0, t: 1 },
+		}
+	},
+	{
+		name: 'solo0',
+		sliders: {
+			fader10: { val: 0, t: 1 },
+			fader11: { val: 0, t: 1 },
+			fader12: { val: 0, t: 1 },
+			fader13: { val: 0, t: 1 },
+		}
+	},
+	{
+		name: 'solo1',
+		sliders: {
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 0, t: 1 },
+		}
+	},
+	{
 		name: 'real-real',
 		sliders: {
 			fader00: { val: 255, t: 1 },
