@@ -1,5 +1,5 @@
-var width = 640//1280;
-var height = 480//720;
+var width = 640;
+var height = 480;
 
 if (pgTapes == undefined) {
   var pgTapes = [];
@@ -16,10 +16,6 @@ var s = function (p) {
   let startT = 0;
 
   let font;
-
-  let setupDone = false;
-
-  let videoCurrent, videoLast;
 
   p.setup = function () {
     if (p.fixedPgs == undefined) {
@@ -62,27 +58,14 @@ var s = function (p) {
       pgCount++;
     }
     print('using ' + pgCount + ' pgraphics');
-
-    videoCurrent = p.createImage(width, height, p.RGB);
-    videoLast = p.createImage(width, height, p.RGB);
-
-    let self = this;
-    var Thread = Java.type('java.lang.Thread');
-    new Thread(function () {
-      font = p.createFont('Verdana', 128);
-      p.delay(1000);
-      setupDone = true;
-    }).start();
   }
   let jump = 0;
   let jumpTarget = 0;
   let jumpLast = 0;
   let jumpStart = 0;
   let jsonUi;
-  let AVGX = 0, AVGY = 0;
   p.draw = function () {
     p.background(0);
-    if (setupDone == false) return;
     jsonUi = JSON.parse(p.jsonUiString);
 
     if (jsonUi.sliderValues == undefined) {
@@ -107,8 +90,6 @@ var s = function (p) {
     }
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
-    // p.processCamera(pgTapes[1], pgInlets[1], false);
-    // p.processCamera(pgTapes[2], pgInlets[2], false);
 
     p.renderVideoScale(pgTapes[0], pgOutlets[1], 0);
     p.renderVideoScale(pgTapes[1], pgOutlets[4], 1);
@@ -150,14 +131,6 @@ var s = function (p) {
     // p.renderNum(pgOutlets[1], 1);
     // p.renderNum(pgOutlets[2], 2);
     // p.renderNum(pgOutlets[3], 3);
-    // let pg = pgOutlets[1];
-    // let pgs = pgTapes[0].tape;
-    // pg.beginDraw();
-    // pg.translate(AVGX, AVGY);
-    // pg.scale(2, 2);
-    // pg.translate(-AVGX, -AVGY);
-    // pg.image(videoCurrent, 0, 0)
-    // pg.endDraw();
 
     for(let i = 0; i < pgOutlets.length; i++) {
       p.spouts[i].sendTexture(pgOutlets[i]);
@@ -207,62 +180,8 @@ var s = function (p) {
     lastT = t;
   }
 
-  p.processCamera = function (pgTape, capture, withMotion) {
+  p.processCamera = function (pgTape, capture) {
     let pgs = pgTape.tape;
-    if(withMotion) {
-      // swap instead of copy for efficiency
-      let temp = videoCurrent;
-      videoCurrent = videoLast;
-      videoLast = temp;
-      videoCurrent.copy(capture, 0, 0, capture.width, capture.height, 0, 0, width, height);
-    }
-    else {
-      videoCurrent = capture;
-    }
-
-    if (pgTape.count == 0 || !withMotion) {
-    }
-    else {
-      videoCurrent.loadPixels();
-      videoLast.loadPixels();
-      let th = 150000;
-      let total = 0;
-      let roi = {x: 0, y: 0, w: width, h: height};
-      let avgX = 0;
-      let avgY = 0;
-      let avgCount = 0;
-      for (let i = roi.y; i < roi.h; i+=4) {
-        for (let j = roi.x; j < roi.w; j+=4) {
-          let loc = i * width + j;
-          let pixc = videoCurrent.pixels[loc];
-          let pixl = videoLast.pixels[loc];
-          let diff = Math.abs(p.red(pixc) - p.red(pixl)) +
-          Math.abs(p.green(pixc) - p.green(pixl)) +
-          Math.abs(p.blue(pixc) - p.blue(pixl));
-          total += diff;
-          if(diff > 100) {
-            avgX += j;
-            avgY += i;
-            avgCount++;
-          }
-        }
-      }
-      if(avgCount > 0) {
-        AVGX = p.lerp(AVGX, avgX / avgCount, 0.02);
-        AVGY = p.lerp(AVGY, avgY / avgCount, 0.02);
-      }
-      print(total)
-      if (total < th) {
-        pgTape.skipCountdown--;
-        if (pgTape.skipCountdown <= 0) {
-          return;
-        }
-      }
-      else {
-        pgTape.skipCountdown = 10;
-      }
-    }
-
     let pg = pgs[pgTape.count];
     pg.beginDraw();
     pg.blendMode(p.BLEND);
@@ -272,10 +191,10 @@ var s = function (p) {
       pg.scale(1, 1.33333);
       pg.translate(-pg.width / 2, -pg.height / 2);
 
-      pg.image(videoCurrent, 0, 0, width, height);
+      pg.image(capture, 0, 0, width, height);
       pg.blendMode(p.ADD);
       pg.tint(255, 255)
-      // pg.image(videoCurrent, 0, 0, width, height);
+      // pg.image(capture, 0, 0, width, height);
       // pg.image(capture, 0, 0, width, height);
       // pg.image(capture, 0, 0, width, height);
       pg.tint(255, 255)
