@@ -77,7 +77,7 @@ var s = function (p) {
         blendMode: 'lightest',
         tUpdate: 30,
         fader0: 255,
-        fader3: 255,
+        fader1: 255,
       }
     }
 
@@ -90,7 +90,7 @@ var s = function (p) {
     p.processCamera(pgTapes[0], pgInlets[0], false);
 
     p.renderVideo(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader0);
-    p.renderVideo(pgTapes[0], pgOutlets[3], 'blendtwo', jsonUi.sliderValues.fader3);
+    p.renderVideo(pgTapes[0], pgOutlets[1], 'blendtwo', jsonUi.sliderValues.fader1);
 
     // black
     // if (t % 60 < 30) {
@@ -242,7 +242,7 @@ var s = function (p) {
 
     let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
     let jumpFader0 = jumpFader(0);
-    let jumpFader1 = jumpFader(5);
+    let jumpFader1 = jumpFader(jsonUi.sliderValues.tUpdate / 2);
 
     let J = 0;
     render.push();
