@@ -48,6 +48,7 @@ var s = function (p) {
         p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
       }
       pgOutlets[i] = p.fixedPgs[pgCount];
+      p.renderBlank(pgOutlets[i]);
       pgCount++;
     }
     for (let i = 0; i < p.numInlets; i++) {
@@ -59,9 +60,6 @@ var s = function (p) {
     }
     print('using ' + pgCount + ' pgraphics');
   }
-  let jump = 0;
-  let jumpTarget = 0;
-  let jumpLast = 0;
   let jumpStart = 0;
   let jsonUi;
   p.draw = function () {
@@ -91,16 +89,11 @@ var s = function (p) {
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
 
-    p.renderVideoScale(pgTapes[0], pgOutlets[1], 0);
-    p.renderVideoScale(pgTapes[1], pgOutlets[4], 1);
-    p.renderVideoScale(pgTapes[1], pgOutlets[5], 1);
-    // p.renderVideoScale(pgTapes[2], pgOutlets[6], 1);
-    p.renderVideoScale(pgTapes[1], pgOutlets[2], 1);
-
     p.renderVideo(pgTapes[0], pgOutlets[3], 0, jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader3);
     p.renderVideo(pgTapes[0], pgOutlets[0], 0, 'fall', jsonUi.sliderValues.fader3);
     // p.renderVideo(pgTapes[0], pgOutlets[0], 1, 'delayStretch', jsonUi.sliderValues.fader0);
 
+    // black
     // if (t % 60 < 30) {
     //   let fade = -Math.cos((t % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
     //   p.renderBlank(pgOutlets[0], 0, 0, 0, fade * 255);
@@ -109,28 +102,20 @@ var s = function (p) {
     //   let fade = -Math.cos(((t+30) % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
     //   p.renderBlank(pgOutlets[3], 0, 0, 0, fade * 255);
     // }
-    {
-      let fade = -Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
-      p.renderBlank(pgOutlets[0]);
-      p.renderBlank(pgOutlets[0], 200, 200, 255, fade * 255);
-    }
-    {
-      let fade = Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
-      p.renderBlank(pgOutlets[3]);
-      p.renderBlank(pgOutlets[3], 200, 200, 255, fade * 255);
-    }
-    p.renderBlank(pgOutlets[1]);
-    p.renderBlank(pgOutlets[2]);
-    // p.renderBlank(pgOutlets[3]);
-    p.renderBlank(pgOutlets[4]);
-    p.renderBlank(pgOutlets[5]);
-    p.renderBlank(pgOutlets[6]);
-    p.renderBlank(pgOutlets[7]);
+
+    // cool white
+    // {
+    //   let fade = -Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
+    //   p.renderBlank(pgOutlets[0]);
+    //   p.renderBlank(pgOutlets[0], 200, 200, 255, fade * 255);
+    // }
+    // {
+    //   let fade = Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
+    //   p.renderBlank(pgOutlets[3]);
+    //   p.renderBlank(pgOutlets[3], 200, 200, 255, fade * 255);
+    // }
 
     // p.renderNum(pgOutlets[0], 0);
-    // p.renderNum(pgOutlets[1], 1);
-    // p.renderNum(pgOutlets[2], 2);
-    // p.renderNum(pgOutlets[3], 3);
 
     for(let i = 0; i < pgOutlets.length; i++) {
       p.spouts[i].sendTexture(pgOutlets[i]);
@@ -166,14 +151,6 @@ var s = function (p) {
     }
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
       jumpStart = t;
-      if (jsonUi.sliderValues.frameMode == 'fall') {
-        jumpLast = index;
-      }
-      else {
-        jumpLast = jumpTarget;
-      }
-      jumpTarget = Math.floor(p.random(pgTapes[0].tape.length))
-      jump = 0;
     }
 
     index = (index + 1) % pgTapes[0].tape.length;
@@ -194,8 +171,6 @@ var s = function (p) {
       pg.image(capture, 0, 0, width, height);
       pg.blendMode(p.ADD);
       pg.tint(255, 255)
-      // pg.image(capture, 0, 0, width, height);
-      // pg.image(capture, 0, 0, width, height);
       // pg.image(capture, 0, 0, width, height);
       pg.tint(255, 255)
     }
@@ -241,46 +216,35 @@ var s = function (p) {
     render.endDraw();
   }
 
+  function jumpFader () {
+    let jump = (p.millis() * 0.001 - jumpStart) / jsonUi.sliderValues.tUpdate;
+    let jumpFader = 0;
+    if (jump < 0.2) {
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.2, 0, 1));
+    }
+    else if (jump < 0.8) {
+      jumpFader = 1;
+    }
+    else if (jump < 1) {
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0.8, 1, 1, 0));
+    }
+    else {
+      jumpFader = 0;
+    }
+    return jumpFader;
+  }
+
   p.renderVideo = function (pgTape, render, I, mode, fader) {
     let pgs = pgTape.tape;
     let pg = pgs[index % Math.max(pgTape.count, 1)];
     render.beginDraw();
-    // p.background(jsonUi.sliderValues.background);
     render.blendMode(p.BLEND);
 
     let delay = I * Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
-    jump = (p.millis() * 0.001 - jumpStart) / 30;//jsonUi.sliderValues.jumpRate;
-    let jumpFader0 = 0;
-    let jumpFader1 = 0;
-    if (jump < 0.2) {
-      jumpFader0 = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.2, 0, 1));
-    }
-    else if (jump < 0.8) {
-      jumpFader0 = 1;
-    }
-    else if (jump < 1) {
-      jumpFader0 = EasingFunctions.easeInOutCubic(p.map(jump, 0.8, 1, 1, 0));
-    }
-    else {
-      jumpFader0 = 0;
-    }
+    let jumpFader0 = jumpFader(0);
+    let jumpFader1 = jumpFader(jsonUi.sliderValues.tUpdate / 2);
 
-    jump = ((p.millis() * 0.001 - jumpStart + 15) % 30) / 30;//jsonUi.sliderValues.jumpRate;
-    if (jump < 0.2) {
-      jumpFader1 = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.2, 0, 1));
-    }
-    else if (jump < 0.8) {
-      jumpFader1 = 1;
-    }
-    else if (jump < 1) {
-      jumpFader1 = EasingFunctions.easeInOutCubic(p.map(jump, 0.8, 1, 1, 0));
-    }
-    else {
-      jumpFader1 = 0;
-    }
-
-    let J = Math.floor(p.lerp(jumpLast, jumpTarget, p.constrain(jump, 0, 1)));
-    if (isNaN(J) || J < 0) J = 0;
+    let J = 0;
     render.push();
     render.tint(fader);
 
@@ -304,13 +268,6 @@ var s = function (p) {
       case 'noise':
         // noise
         render.image(pgs[Math.floor(p.noise(t * 0.1, index * 0.0) * pgs.length)], 0, 0);
-        break;
-
-      case 'jump':
-        // jump
-        if (jump > 1) jump = 1;
-        render.tint(fader, jsonUi.sliderValues.blendTint * 255);
-        render.image(pgs[(index + pgs.length + J) % pgs.length], 0, 0);
         break;
 
       case 'fall':
@@ -354,7 +311,7 @@ var s = function (p) {
       case 'normal':
       default:
         // real-time
-        render.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
+        render.image(pgs[index], 0, 0);
         break;
     }
     render.pop();
