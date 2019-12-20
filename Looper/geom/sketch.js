@@ -17,11 +17,14 @@ var s = function (p) {
 
   let font;
 
+  let jsonUi;
+
   p.setup = function () {
     if (p.fixedPgs == undefined) {
       p.fixedPgs = [];
     }
     startT = p.millis() * 0.001;
+    font = p.createFont('Verdana', 64);
 
     p.createCanvas(width * 2, height * 2)
     p.frameRate(30);
@@ -60,8 +63,7 @@ var s = function (p) {
     }
     print('using ' + pgCount + ' pgraphics');
   }
-  let jumpStart = 0;
-  let jsonUi;
+
   p.draw = function () {
     p.background(0);
     jsonUi = JSON.parse(p.jsonUiString);
@@ -89,9 +91,8 @@ var s = function (p) {
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
 
-    p.renderVideo(pgTapes[0], pgOutlets[3], 0, jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader3);
-    p.renderVideo(pgTapes[0], pgOutlets[0], 0, 'fall', jsonUi.sliderValues.fader3);
-    // p.renderVideo(pgTapes[0], pgOutlets[0], 1, 'delayStretch', jsonUi.sliderValues.fader0);
+    p.renderVideo(pgTapes[0], pgOutlets[0], 'fall', jsonUi.sliderValues.fader0);
+    p.renderVideo(pgTapes[0], pgOutlets[3], jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader3);
 
     // black
     // if (t % 60 < 30) {
@@ -150,7 +151,6 @@ var s = function (p) {
       print(p.frameRate());
     }
     if (Math.floor(t / T) - Math.floor(lastT / T) > 0) {
-      jumpStart = t;
     }
 
     index = (index + 1) % pgTapes[0].tape.length;
@@ -216,17 +216,20 @@ var s = function (p) {
     render.endDraw();
   }
 
-  function jumpFader () {
-    let jump = (p.millis() * 0.001 - jumpStart) / jsonUi.sliderValues.tUpdate;
+  function jumpFader (offset) {
+    let T = jsonUi.sliderValues.tUpdate;
+    let jump = ((p.millis() * 0.001 + offset) % T) / T;
     let jumpFader = 0;
-    if (jump < 0.2) {
-      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, 0.2, 0, 1));
+    let fadeT = 2;
+    let fadeR = fadeT / T;
+    if (jump < fadeR) {
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, fadeR, 0, 1));
     }
-    else if (jump < 0.8) {
+    else if (jump < 1-fadeR) {
       jumpFader = 1;
     }
     else if (jump < 1) {
-      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0.8, 1, 1, 0));
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 1-fadeR, 1, 1, 0));
     }
     else {
       jumpFader = 0;
@@ -234,15 +237,14 @@ var s = function (p) {
     return jumpFader;
   }
 
-  p.renderVideo = function (pgTape, render, I, mode, fader) {
+  p.renderVideo = function (pgTape, render, mode, fader) {
     let pgs = pgTape.tape;
-    let pg = pgs[index % Math.max(pgTape.count, 1)];
     render.beginDraw();
     render.blendMode(p.BLEND);
 
-    let delay = I * Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
+    let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
     let jumpFader0 = jumpFader(0);
-    let jumpFader1 = jumpFader(jsonUi.sliderValues.tUpdate / 2);
+    let jumpFader1 = jumpFader(5);
 
     let J = 0;
     render.push();
@@ -253,7 +255,7 @@ var s = function (p) {
     switch (mode) {
       case 'delay':
         // delay
-        render.image(pgs[(index + pgs.length - delay * (I + 1)) % pgs.length], 0, 0);
+        render.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
         break;
 
       case 'delayStretch':
