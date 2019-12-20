@@ -72,7 +72,8 @@ var s = function (p) {
       jsonUi.sliderValues = {
         delayFrame: 599,
         debugMode: 'showVideo',
-        frameMode: 'delay',
+        frameMode0: 'delay',
+        frameMode1: 'blendtwo',
         blendTint: 0.3,
         blendMode: 'lightest',
         tUpdate: 30,
@@ -89,8 +90,8 @@ var s = function (p) {
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
 
-    p.renderVideo(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.frameMode, jsonUi.sliderValues.fader0);
-    p.renderVideo(pgTapes[0], pgOutlets[1], 'blendtwo', jsonUi.sliderValues.fader1);
+    p.renderVideo(pgTapes[0], pgOutlets[0], jsonUi.sliderValues.frameMode0, jsonUi.sliderValues.fader0);
+    p.renderVideo(pgTapes[0], pgOutlets[1], jsonUi.sliderValues.frameMode1, jsonUi.sliderValues.fader1);
 
     // black
     // if (t % 60 < 30) {
