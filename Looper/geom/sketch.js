@@ -120,6 +120,9 @@ var s = function (p) {
       pgOutlets[j].endDraw();
     }
 
+    p.renderVertical(pgInters[0], [0, 1]);
+    p.renderHorizontal(pgInters[1], [2, 3, 4]);
+
     // black
     // if (t % 60 < 30) {
     //   let fade = -Math.cos((t % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
@@ -252,6 +255,26 @@ var s = function (p) {
     render.text('' + I, -64, 0);
     render.pop();
     render.endDraw();
+  }
+
+  p.renderHorizontal = function (org, indices) {
+    for (let i = 0; i < indices.length; i++) {
+      let render = pgOutlets[indices[i]];
+      render.beginDraw();
+      render.background(0);
+      render.image(org, -width * i, 0, width * indices.length, height);
+      render.endDraw();
+    }
+  }
+
+  p.renderVertical = function (org, indices) {
+    for (let i = 0; i < indices.length; i++) {
+      let render = pgOutlets[indices[i]];
+      render.beginDraw();
+      render.background(0);
+      render.image(org, 0, -height * i, width, height * indices.length);
+      render.endDraw();
+    }
   }
 
   function jumpFader(offset) {
