@@ -104,9 +104,10 @@ var s = function (p) {
     }
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
+    p.processCamera2(pgTapes[1], pgInlets[0], false);
 
     p.renderVideo(pgTapes[0], pgInters[0], 'normal', 255);
-    p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
+    p.renderVideo(pgTapes[1], pgInters[1], 'delay', 255);
     p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
     p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
 
@@ -120,9 +121,66 @@ var s = function (p) {
       pgOutlets[j].endDraw();
     }
 
-    p.renderVertical(pgInters[0], [0, 1], 100);
-    p.renderHorizontal(pgInters[1], [2, 3, 4], 100);
+    let args;
+    args = {
+      source: pgInters[0],
+      indices: [0, 1],
+      gap: 50,
+      dl: 30,
+      dr: 30,
+    }    
+    // p.renderVertical(args);
+    // p.renderHorizontal(pgInters[0], [2, 3, 4], 50, 0, 200);
+    args = {
+      source: pgInters[0],
+      indices: [2, 3],
+      gap: 50,
+      // dt: 0,
+      // db: 200,
+      x: 0, y: 0, w: width * 2, h: height * 2 / 3
+    }    
+    p.renderHorizontal(args);
+    args = {
+      source: pgInters[2],
+      indices: [2],
+      gap: 0,
+      x: 0, y: height * 2 / 3, w: width*3, h: height / 3*3
+    }
+    p.renderHorizontal(args);
+    args = {
+      source: pgInters[3],
+      indices: [3],
+      gap: 0,
+      x: 0, y: height * 2 / 3, w: width, h: height / 3
+    }
+    p.renderHorizontal(args);
 
+    for(let i = 0; i < 3; i++) {
+      args = {
+        source: pgInters[i],
+        indices: [4],
+        gap: 0,
+        x: 0, y: height * i / 3, w: width, h: height / 3
+      }
+      p.renderHorizontal(args);  
+    }
+    args = {
+      source: pgInters[0],
+      indices: [4],
+      gap: 0,
+      x: 0, y: height * 2 / 3, w: width*3, h: height / 3*3
+    }
+    p.renderHorizontal(args);  
+
+    for(let i = 0; i < 2; i++) {
+      args = {
+        source: pgInters[i],
+        indices: [0],
+        gap: 0,
+        x: width * i / 2, y: 0, w: width / 2, h: height
+      }
+      p.renderHorizontal(args);  
+    }
     // black
     // if (t % 60 < 30) {
     //   let fade = -Math.cos((t % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
@@ -200,18 +258,15 @@ var s = function (p) {
     let pgs = pgTape.tape;
     let pg = pgs[pgTape.count];
     pg.beginDraw();
+    pg.blendMode(p.LIGHTEST);
     pg.blendMode(p.BLEND);
     pg.background(0);
     if (jsonUi.sliderValues.debugMode == 'showVideo') {
-      pg.translate(pg.width / 2, pg.height / 2);
-      pg.scale(1, 1.33333);
-      pg.translate(-pg.width / 2, -pg.height / 2);
-
       pg.image(capture, 0, 0, width, height);
-      pg.blendMode(p.ADD);
-      pg.tint(255, 255)
+      // pg.blendMode(p.ADD);
+      // pg.tint(255, 255)
       // pg.image(capture, 0, 0, width, height);
-      pg.tint(255, 255)
+      // pg.tint(255, 255)
     }
     else {
       pg.translate(pg.width / 2, pg.height / 2);
@@ -219,6 +274,22 @@ var s = function (p) {
       let x = p.map(Math.floor(pgTape.count / 10) * 10, 0, pgs.length, -200, 200);
       pg.text(("00000" + pgTape.count).slice(-4), x - 64, 0);
     }
+    pg.endDraw();
+
+    pgTape.count++;
+    if (pgTape.count >= pgs.length) {
+      pgTape.count = 0;
+    }
+  }
+
+  p.processCamera2 = function (pgTape, capture) {
+    let pgs = pgTape.tape;
+    let pg = pgs[pgTape.count];
+    pg.beginDraw();
+    pg.blendMode(p.LIGHTEST);
+    // pg.blendMode(p.BLEND);
+    // pg.background(0);
+    pg.image(capture, 0, 0, width, height);
     pg.endDraw();
 
     pgTape.count++;
@@ -256,24 +327,41 @@ var s = function (p) {
     render.endDraw();
   }
 
-  p.renderHorizontal = function (org, indices, d) {
-    if (d == undefined) d = 0;
+  p.renderHorizontal = function (args) {
+    let source = args.source;
+    let indices = args.indices;
+    let gap = args.gap;
+    let dt = args.dt;
+    let db = args.db;
+    let x = args.x, y = args.y, w = args.w, h = args.h;
+    if (gap == undefined) gap = 0;
+    if (dt == undefined) dt = 0;
+    if (db == undefined) db = 0;
+    let n = indices.length;
     for (let i = 0; i < indices.length; i++) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
-      render.background(0);
-      render.image(org, -width * i, -d, width * indices.length, height + d * 2);
+      render.translate(-width * i - gap * i + x, -dt + y);
+      render.image(source, 0, 0, w + gap * (n-1), h + (dt + db));
       render.endDraw();
     }
   }
 
-  p.renderVertical = function (org, indices, d) {
-    if (d == undefined) d = 0;
+  p.renderVertical = function (args) {
+    let source = args.source;
+    let indices = args.indices;
+    let gap = args.gap;
+    let dl = args.dl;
+    let dr = args.dr;
+    if (gap == undefined) gap = 0;
+    if (dl == undefined) dl = 0;
+    if (dr == undefined) dr = 0;
+    let n = indices.length;
     for (let i = 0; i < indices.length; i++) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
-      render.background(0);
-      render.image(org, -d, -height * i, width + d * 2, height * indices.length);
+      render.translate(-dl, -height * i - gap * i);
+      render.image(source, 0, 0, width + (dl + dr), height * n + gap * (n-1));
       render.endDraw();
     }
   }
