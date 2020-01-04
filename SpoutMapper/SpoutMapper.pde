@@ -1,7 +1,7 @@
 import spout.*;
 Spout[] receivers;
 PGraphics[] canvas;
-int nReceivers = 10;
+int nReceivers = 6;
 
 import deadpixel.keystone.*;
 

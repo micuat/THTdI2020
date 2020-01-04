@@ -39,7 +39,7 @@ var s = function (p) {
     for (let i = 0; i < pgTapes.length; i++) {
       pgTapes[i].tape = [];
       for (let j = 0; j < length; j++) {
-        if(p.fixedPgs[pgCount] == undefined) {
+        if (p.fixedPgs[pgCount] == undefined) {
           p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
         }
         pgTapes[i].tape.push(p.fixedPgs[pgCount]);
@@ -48,7 +48,7 @@ var s = function (p) {
     }
 
     for (let i = 0; i < p.numOutlets; i++) {
-      if(p.fixedPgs[pgCount] == undefined) {
+      if (p.fixedPgs[pgCount] == undefined) {
         p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
       }
       pgOutlets[i] = p.fixedPgs[pgCount];
@@ -56,14 +56,14 @@ var s = function (p) {
       pgCount++;
     }
     for (let i = 0; i < p.numInlets; i++) {
-      if(p.fixedPgs[pgCount] == undefined) {
+      if (p.fixedPgs[pgCount] == undefined) {
         p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
       }
       pgInlets[i] = p.fixedPgs[pgCount];
       pgCount++;
     }
     for (let i = 0; i < p.numInters; i++) {
-      if(p.fixedPgs[pgCount] == undefined) {
+      if (p.fixedPgs[pgCount] == undefined) {
         p.fixedPgs[pgCount] = p.createGraphics(width, height, p.P3D);
       }
       pgInters[i] = p.fixedPgs[pgCount];
@@ -99,7 +99,7 @@ var s = function (p) {
 
     let t = p.millis() * 0.001;
 
-    for(let i = 0; i < p.receivers.length; i++) {
+    for (let i = 0; i < p.receivers.length; i++) {
       p.receivers[i].receiveTexture(pgInlets[i]);
     }
 
@@ -142,23 +142,26 @@ var s = function (p) {
     //   p.renderBlank(pgOutlets[3], 200, 200, 255, fade * 255);
     // }
 
-    // p.renderNum(pgOutlets[0], 0);
+    // for(let i = 0; i < pgOutlets.length; i++) {
+    //   p.renderNum(pgOutlets[i], i);
+    // }
 
-    for(let i = 0; i < pgOutlets.length; i++) {
+    for (let i = 0; i < pgOutlets.length; i++) {
       p.spouts[i].sendTexture(pgOutlets[i]);
     }
 
-    let ncol = 4;
+    // p.scale(4/6, 4/6);
+    let ncol = 6;
     let w = width * 2 / ncol;
     let h = height * 2 / ncol;
-    for(let i = 0; i < pgInlets.length; i++) {
+    for (let i = 0; i < pgInlets.length; i++) {
       let x = (i % ncol) * w;
       let y = Math.floor(i / ncol) * h;
       p.image(pgInlets[i], x, y, w, h); // tape
       p.text("inlet " + p.str(i), x + 10, y + 10);
     }
 
-    for(let i = 0; i < pgTapes.length; i++) {
+    for (let i = 0; i < pgTapes.length; i++) {
       let x = (i % ncol) * w;
       let y = Math.floor(i / ncol + 1) * h;
       p.image(pgTapes[i].tape[pgTapes[i].count], x, y, w, h); // tape
@@ -166,14 +169,14 @@ var s = function (p) {
     }
 
     let names = ['normal', 'delay', 'fall', 'blendtwo'];
-    for(let i = 0; i < pgInters.length; i++) {
+    for (let i = 0; i < pgInters.length; i++) {
       let x = (i % ncol) * w;
       let y = Math.floor(i / ncol + 2) * h;
       p.image(pgInters[i], x, y, w, h); // tape
       p.text("inter " + names[i], x + 10, y + 10);
     }
 
-    for(let i = 0; i < pgOutlets.length; i++) {
+    for (let i = 0; i < pgOutlets.length; i++) {
       let x = (i % ncol) * w;
       let y = Math.floor(i / ncol + 3) * h;
       p.image(pgOutlets[i], x, y, w, h); // tape
@@ -225,7 +228,7 @@ var s = function (p) {
   p.renderBlank = function (render, r, g, b, a) {
     render.beginDraw();
     render.push();
-    if(r == undefined) {
+    if (r == undefined) {
       render.background(0);
     }
     else {
@@ -239,18 +242,19 @@ var s = function (p) {
 
   p.renderNum = function (render, I) {
     render.beginDraw();
-    render.background(255, 0, 0);
+    render.background(100, 0, 0);
     render.push();
-    render.fill(0);
+    render.fill(255);
     render.blendMode(p.BLEND);
     render.translate(render.width / 2, render.height / 2);
     render.textFont(font);
+    render.textSize(240);
     render.text('' + I, -64, 0);
     render.pop();
     render.endDraw();
   }
 
-  function jumpFader (offset) {
+  function jumpFader(offset) {
     let T = jsonUi.sliderValues.tUpdate;
     let jump = ((p.millis() * 0.001 + offset) % T) / T;
     let jumpFader = 0;
@@ -259,11 +263,11 @@ var s = function (p) {
     if (jump < fadeR) {
       jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 0, fadeR, 0, 1));
     }
-    else if (jump < 1-fadeR) {
+    else if (jump < 1 - fadeR) {
       jumpFader = 1;
     }
     else if (jump < 1) {
-      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 1-fadeR, 1, 1, 0));
+      jumpFader = EasingFunctions.easeInOutCubic(p.map(jump, 1 - fadeR, 1, 1, 0));
     }
     else {
       jumpFader = 0;
@@ -295,7 +299,7 @@ var s = function (p) {
       case 'delayStretch':
         render.image(pgs[(index + pgs.length - delayStretch) % pgs.length], 0, 0);
         break;
-  
+
       case 'random':
         // random
         render.image(p.random(pgs), 0, 0);
@@ -330,7 +334,7 @@ var s = function (p) {
           render.background(0);
           render.blendMode(p.LIGHTEST);
           render.tint(fader);
-          render.image(pgs[(index + pgs.length - J) % pgs.length], width*0.0, 0);
+          render.image(pgs[(index + pgs.length - J) % pgs.length], width * 0.0, 0);
           render.image(pgs[(index + pgs.length) % pgs.length], 0, 0);
           render.blendMode(p.BLEND);
         }
@@ -354,7 +358,7 @@ var s = function (p) {
     render.endDraw();
   }
 
-  
+
   p.renderVideoDelay = function (pgTape, render, fader) {
     let pgs = pgTape.tape;
     render.beginDraw();
@@ -378,16 +382,16 @@ var s = function (p) {
 
     render.push();
 
-    if(dir == 0) {
-      render.image(pgs[(index) % pgs.length], 0, 0, width*2, height);
+    if (dir == 0) {
+      render.image(pgs[(index) % pgs.length], 0, 0, width * 2, height);
     }
-    else if(dir == 1){
-      render.image(pgs[(index) % pgs.length], -width, 0, width*3, height);
+    else if (dir == 1) {
+      render.image(pgs[(index) % pgs.length], -width, 0, width * 3, height);
     }
-    else if(dir == 2){
-      render.translate(render.width/2, render.height/2)
+    else if (dir == 2) {
+      render.translate(render.width / 2, render.height / 2)
       render.scale(2, 2);
-      render.translate(-render.width/2, -render.height/2)
+      render.translate(-render.width / 2, -render.height / 2)
       render.image(pgs[(index) % pgs.length], 0, 0);
     }
 
@@ -395,8 +399,8 @@ var s = function (p) {
     render.endDraw();
   }
 
-  p.keyPressed = function() {
-    if(p.key == ' ') {
+  p.keyPressed = function () {
+    if (p.key == ' ') {
       // pgTapes[0].count = 0;
       startT = p.millis() * 0.001
     }
