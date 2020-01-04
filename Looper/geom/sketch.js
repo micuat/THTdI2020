@@ -120,8 +120,8 @@ var s = function (p) {
       pgOutlets[j].endDraw();
     }
 
-    p.renderVertical(pgInters[0], [0, 1]);
-    p.renderHorizontal(pgInters[1], [2, 3, 4]);
+    p.renderVertical(pgInters[0], [0, 1], 100);
+    p.renderHorizontal(pgInters[1], [2, 3, 4], 100);
 
     // black
     // if (t % 60 < 30) {
@@ -153,7 +153,6 @@ var s = function (p) {
       p.spouts[i].sendTexture(pgOutlets[i]);
     }
 
-    // p.scale(4/6, 4/6);
     let ncol = 6;
     let w = width * 2 / ncol;
     let h = height * 2 / ncol;
@@ -257,22 +256,24 @@ var s = function (p) {
     render.endDraw();
   }
 
-  p.renderHorizontal = function (org, indices) {
+  p.renderHorizontal = function (org, indices, d) {
+    if (d == undefined) d = 0;
     for (let i = 0; i < indices.length; i++) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
       render.background(0);
-      render.image(org, -width * i, 0, width * indices.length, height);
+      render.image(org, -width * i, -d, width * indices.length, height + d * 2);
       render.endDraw();
     }
   }
 
-  p.renderVertical = function (org, indices) {
+  p.renderVertical = function (org, indices, d) {
+    if (d == undefined) d = 0;
     for (let i = 0; i < indices.length; i++) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
       render.background(0);
-      render.image(org, 0, -height * i, width, height * indices.length);
+      render.image(org, -d, -height * i, width + d * 2, height * indices.length);
       render.endDraw();
     }
   }
