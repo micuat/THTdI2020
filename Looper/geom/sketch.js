@@ -106,7 +106,7 @@ var s = function (p) {
     for (let i = 0; i < 6; i++) {
       p.renderBlank(pgOutlets[i]);
     }
-    let pairs = [[0, 0], [1, 2], [1, 3]];
+    let pairs = [[0, 0], [1, 3], [2, 3]];
     let sequences = [
       function (alpha) {
         let args;
