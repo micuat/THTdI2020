@@ -86,14 +86,6 @@ var s = function (p) {
         blendTint: 0.3,
         blendMode: 'lightest',
         tUpdate: 30,
-        fader00: 255,
-        fader01: 255,
-        fader02: 255,
-        fader03: 255,
-        fader10: 255,
-        fader11: 255,
-        fader12: 255,
-        fader13: 255,
       }
     }
 
@@ -104,129 +96,152 @@ var s = function (p) {
     }
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
-    // p.processCamera2(pgTapes[1], pgInlets[0], false);
+    // p.processCamera(pgTapes[1], pgInlets[0], true);
 
     p.renderVideo(pgTapes[0], pgInters[0], 'normal', 255);
     p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
     p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
     p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
 
-    for (let j = 0; j < 2; j++) {
-      pgOutlets[j].beginDraw();
-      pgOutlets[j].background(0);
-      for (let i = 0; i < 4; i++) {
-        pgOutlets[j].tint(255, jsonUi.sliderValues['fader' + j + i]);
-        pgOutlets[j].image(pgInters[i], 0, 0);
-      }
-      pgOutlets[j].endDraw();
+    for (let i = 0; i < 6; i++) {
+      p.renderBlank(pgOutlets[i]);
     }
-
-    let multiScreen = false;
-    if (!multiScreen) {
-      let args;
-      args = {
-        source: pgInters[0],
-        indices: [0, 1],
-        gap: 50,
-        dl: 30,
-        dr: 30,
-        x: 0,
-        y: 0,
-        w: width,
-        h: height * 2
-      }
-      p.renderVertical(args);
-      args = {
-        source: pgInters[0],
-        indices: [2, 3, 4],
-        gap: 50,
-        dt: 0,
-        db: 0,//200,
-        x: 0,
-        y: 0,
-        w: width * 3,
-        h: height
-      }
-      p.renderHorizontal(args);
-    }
-    else {
-      let args;
-      args = {
-        source: pgInters[0],
-        indices: [2, 3],
-        gap: 50,
-        // dt: 0,
-        // db: 200,
-        x: 0, y: 0, w: width * 2, h: height * 2 / 3
-      }
-      p.renderHorizontal(args);
-      args = {
-        source: pgInters[2],
-        indices: [2],
-        gap: 0,
-        x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3
-      }
-      p.renderHorizontal(args);
-      args = {
-        source: pgInters[3],
-        indices: [3],
-        gap: 0,
-        x: 0, y: height * 2 / 3, w: width, h: height / 3
-      }
-      p.renderHorizontal(args);
-
-      for (let i = 0; i < 3; i++) {
+    let pairs = [[0, 0], [1, 2], [1, 3]];
+    let sequences = [
+      function (alpha) {
+        let args;
         args = {
-          source: pgInters[i],
+          source: pgInters[pairs[0][0]],
+          indices: [0, 1],
+          gap: 50,
+          dl: 30, dr: 30,
+          x: 0, y: 0, w: width, h: height * 2,
+          alpha: alpha
+        }
+        p.renderVertical(args);
+        args = {
+          source: pgInters[pairs[0][1]],
+          indices: [2, 3, 4],
+          gap: 50,
+          dt: 0, db: 0,//200,
+          x: 0, y: 0, w: width * 3, h: height,
+          alpha: alpha
+        }
+        p.renderHorizontal(args)
+      },
+      function (alpha) {
+        let args;
+        args = {
+          source: pgInters[pairs[1][0]],
+          indices: [0, 1],
+          gap: 50,
+          dl: 30, dr: 30,
+          x: 0, y: 0, w: width, h: height * 2,
+          alpha: alpha
+        }
+        p.renderVertical(args);
+        args = {
+          source: pgInters[pairs[1][1]],
+          indices: [2, 3, 4],
+          gap: 50,
+          dt: 0, db: 0,//200,
+          x: 0, y: 0, w: width * 3, h: height,
+          alpha: alpha
+        }
+        p.renderHorizontal(args)
+      },
+      function (alpha) {
+        let args;
+        args = {
+          source: pgInters[pairs[2][0]],
+          indices: [0, 1],
+          gap: 50,
+          dl: 30, dr: 30,
+          x: 0, y: 0, w: width, h: height * 2,
+          alpha: alpha
+        }
+        p.renderVertical(args);
+        args = {
+          source: pgInters[pairs[2][1]],
+          indices: [2, 3, 4],
+          gap: 50,
+          dt: 0, db: 0,//200,
+          x: 0, y: 0, w: width * 3, h: height,
+          alpha: alpha
+        }
+        p.renderHorizontal(args)
+      },
+      function (alpha) {
+        let args;
+        args = {
+          source: pgInters[0],
+          indices: [2, 3],
+          gap: 50,
+          // dt: 0, db: 200,
+          x: 0, y: 0, w: width * 2, h: height * 2 / 3,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+        args = {
+          source: pgInters[2],
+          indices: [2],
+          gap: 0,
+          x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+        args = {
+          source: pgInters[3],
+          indices: [3],
+          gap: 0,
+          x: 0, y: height * 2 / 3, w: width, h: height / 3,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+
+        for (let i = 0; i < 3; i++) {
+          args = {
+            source: pgInters[i],
+            indices: [4],
+            gap: 0,
+            x: 0, y: height * i / 3, w: width, h: height / 3,
+            alpha: alpha
+          }
+          p.renderHorizontal(args);
+        }
+        args = {
+          source: pgInters[0],
           indices: [4],
           gap: 0,
-          x: 0, y: height * i / 3, w: width, h: height / 3
+          x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
+          alpha: alpha
         }
         p.renderHorizontal(args);
-      }
-      args = {
-        source: pgInters[0],
-        indices: [4],
-        gap: 0,
-        x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3
-      }
-      p.renderHorizontal(args);
 
-      for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 2; i++) {
+          args = {
+            source: pgInters[i],
+            indices: [0],
+            gap: 0,
+            x: width * i / 2, y: 0, w: width / 2, h: height,
+            alpha: alpha
+          }
+          p.renderHorizontal(args);
+        }
         args = {
-          source: pgInters[i],
-          indices: [0],
+          source: pgInters[0],
+          indices: [1],
           gap: 0,
-          x: width * i / 2, y: 0, w: width / 2, h: height
+          x: 0, y: 0, w: width, h: height,
+          alpha: alpha
         }
         p.renderHorizontal(args);
       }
-    }
-    // black
-    // if (t % 60 < 30) {
-    //   let fade = -Math.cos((t % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
-    //   p.renderBlank(pgOutlets[0], 0, 0, 0, fade * 255);
-    // }
-    // if ((t+30) % 60 < 30) {
-    //   let fade = -Math.cos(((t+30) % 60) / 30 * 2 * Math.PI) * 0.5 + 0.5;
-    //   p.renderBlank(pgOutlets[3], 0, 0, 0, fade * 255);
-    // }
-
-    // cool white
-    // {
-    //   let fade = -Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
-    //   p.renderBlank(pgOutlets[0]);
-    //   p.renderBlank(pgOutlets[0], 200, 200, 255, fade * 255);
-    // }
-    // {
-    //   let fade = Math.cos(t / 30 * 2 * Math.PI) * 0.25 + 0.75;
-    //   p.renderBlank(pgOutlets[3]);
-    //   p.renderBlank(pgOutlets[3], 200, 200, 255, fade * 255);
-    // }
-
-    // for(let i = 0; i < pgOutlets.length; i++) {
-    //   p.renderNum(pgOutlets[i], i);
-    // }
+    ];
+    sequences[0](Math.sqrt(jsonUi.sliderValues.fader00 / 255) * 255);
+    sequences[1](Math.sqrt(jsonUi.sliderValues.fader01 / 255) * 255);
+    sequences[2](Math.sqrt(jsonUi.sliderValues.fader02 / 255) * 255);
+    sequences[3](Math.sqrt(jsonUi.sliderValues.fader03 / 255) * 255);
 
     for (let i = 0; i < pgOutlets.length; i++) {
       p.spouts[i].sendTexture(pgOutlets[i]);
@@ -275,19 +290,22 @@ var s = function (p) {
     lastT = t;
   }
 
-  p.processCamera = function (pgTape, capture) {
+  p.processCamera = function (pgTape, capture, addMore) {
     let pgs = pgTape.tape;
     let pg = pgs[pgTape.count];
     pg.beginDraw();
-    pg.blendMode(p.LIGHTEST);
-    pg.blendMode(p.BLEND);
-    pg.background(0);
+    if (addMore) {
+      pg.blendMode(p.LIGHTEST);
+    }
+    else {
+      pg.blendMode(p.BLEND);
+      pg.background(0);
+    }
     if (jsonUi.sliderValues.debugMode == 'showVideo') {
       pg.image(capture, 0, 0, width, height);
       // pg.blendMode(p.ADD);
       // pg.tint(255, 255)
       // pg.image(capture, 0, 0, width, height);
-      // pg.tint(255, 255)
     }
     else {
       pg.translate(pg.width / 2, pg.height / 2);
@@ -295,22 +313,6 @@ var s = function (p) {
       let x = p.map(Math.floor(pgTape.count / 10) * 10, 0, pgs.length, -200, 200);
       pg.text(("00000" + pgTape.count).slice(-4), x - 64, 0);
     }
-    pg.endDraw();
-
-    pgTape.count++;
-    if (pgTape.count >= pgs.length) {
-      pgTape.count = 0;
-    }
-  }
-
-  p.processCamera2 = function (pgTape, capture) {
-    let pgs = pgTape.tape;
-    let pg = pgs[pgTape.count];
-    pg.beginDraw();
-    pg.blendMode(p.LIGHTEST);
-    // pg.blendMode(p.BLEND);
-    // pg.background(0);
-    pg.image(capture, 0, 0, width, height);
     pg.endDraw();
 
     pgTape.count++;
@@ -355,6 +357,7 @@ var s = function (p) {
     let dt = args.dt;
     let db = args.db;
     let x = args.x, y = args.y, w = args.w, h = args.h;
+    let alpha = args.alpha;
     if (gap == undefined) gap = 0;
     if (dt == undefined) dt = 0;
     if (db == undefined) db = 0;
@@ -363,6 +366,7 @@ var s = function (p) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
       render.translate(-width * i - gap * i + x, -dt + y);
+      render.tint(255, alpha);
       render.image(source, 0, 0, w + gap * (n - 1), h + (dt + db));
       render.endDraw();
     }
@@ -374,6 +378,8 @@ var s = function (p) {
     let gap = args.gap;
     let dl = args.dl;
     let dr = args.dr;
+    let x = args.x, y = args.y, w = args.w, h = args.h;
+    let alpha = args.alpha;
     if (gap == undefined) gap = 0;
     if (dl == undefined) dl = 0;
     if (dr == undefined) dr = 0;
@@ -381,8 +387,9 @@ var s = function (p) {
     for (let i = 0; i < indices.length; i++) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
-      render.translate(-dl, -height * i - gap * i);
-      render.image(source, 0, 0, width + (dl + dr), height * n + gap * (n - 1));
+      render.translate(-dl + x, -height * i - gap * i + y);
+      render.tint(255, alpha);
+      render.image(source, 0, 0, w + (dl + dr), h + gap * (n - 1));
       render.endDraw();
     }
   }
@@ -487,47 +494,6 @@ var s = function (p) {
         render.image(pgs[index], 0, 0);
         break;
     }
-    render.pop();
-    render.endDraw();
-  }
-
-
-  p.renderVideoDelay = function (pgTape, render, fader) {
-    let pgs = pgTape.tape;
-    render.beginDraw();
-    render.blendMode(p.BLEND);
-
-    let delay = Math.min(Math.floor(jsonUi.sliderValues.delayFrame), pgs.length - 1);
-    render.push();
-
-    render.tint(fader);
-    // delay
-    render.image(pgs[(index + pgs.length - delay) % pgs.length], 0, 0);
-
-    render.pop();
-    render.endDraw();
-  }
-
-  p.renderVideoScale = function (pgTape, render, dir) {
-    let pgs = pgTape.tape;
-    render.beginDraw();
-    render.blendMode(p.BLEND);
-
-    render.push();
-
-    if (dir == 0) {
-      render.image(pgs[(index) % pgs.length], 0, 0, width * 2, height);
-    }
-    else if (dir == 1) {
-      render.image(pgs[(index) % pgs.length], -width, 0, width * 3, height);
-    }
-    else if (dir == 2) {
-      render.translate(render.width / 2, render.height / 2)
-      render.scale(2, 2);
-      render.translate(-render.width / 2, -render.height / 2)
-      render.image(pgs[(index) % pgs.length], 0, 0);
-    }
-
     render.pop();
     render.endDraw();
   }

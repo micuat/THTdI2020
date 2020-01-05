@@ -9,71 +9,17 @@ const sliderProperties = {
 	blendMode: { radio: ['blend', 'lightest', 'darkest'], default: 'lightest' },
 	tUpdate: { min: 1, max: 60, default: 30 },
 	fader00: { min: 0, max: 255, default: 255 },
-	fader01: { min: 0, max: 255, default: 255 },
-	fader02: { min: 0, max: 255, default: 255 },
-	fader03: { min: 0, max: 255, default: 255 },
-	fader10: { min: 0, max: 255, default: 255 },
-	fader11: { min: 0, max: 255, default: 255 },
-	fader12: { min: 0, max: 255, default: 255 },
-	fader13: { min: 0, max: 255, default: 255 },
+	fader01: { min: 0, max: 255, default: 0 },
+	fader02: { min: 0, max: 255, default: 0 },
+	fader03: { min: 0, max: 255, default: 0 },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {
 	sliderValues[key] = sliderProperties[key].default;
 }
 const presets = [
-	// {
-	// 	name: 'blank',
-	// 	sliders: {
-	// 		fader0: { val: 0, t: 1 },
-	// 		fader1: { val: 0, t: 1 },
-	// 	}
-	// },
-	// {
-	// 	name: 'all',
-	// 	sliders: {
-	// 		fader0: { val: 255, t: 1 },
-	// 		fader1: { val: 255, t: 1 },
-	// 	}
-	// },
-	// {
-	// 	name: 'solo0',
-	// 	sliders: {
-	// 		fader0: { val: 255, t: 1 },
-	// 		fader1: { val: 0, t: 1 },
-	// 	}
-	// },
-	// {
-	// 	name: 'solo1',
-	// 	sliders: {
-	// 		fader0: { val: 0, t: 1 },
-	// 		fader1: { val: 255, t: 1 },
-	// 	}
-	// },
 	{
 		name: 'blank',
-		sliders: {
-			fader00: { val: 0, t: 1 },
-			fader01: { val: 0, t: 1 },
-			fader02: { val: 0, t: 1 },
-			fader03: { val: 0, t: 1 },
-			fader10: { val: 0, t: 1 },
-			fader11: { val: 0, t: 1 },
-			fader12: { val: 0, t: 1 },
-			fader13: { val: 0, t: 1 },
-		}
-	},
-	{
-		name: 'solo0',
-		sliders: {
-			fader10: { val: 0, t: 1 },
-			fader11: { val: 0, t: 1 },
-			fader12: { val: 0, t: 1 },
-			fader13: { val: 0, t: 1 },
-		}
-	},
-	{
-		name: 'solo1',
 		sliders: {
 			fader00: { val: 0, t: 1 },
 			fader01: { val: 0, t: 1 },
@@ -88,28 +34,6 @@ const presets = [
 			fader01: { val: 0, t: 1 },
 			fader02: { val: 0, t: 1 },
 			fader03: { val: 0, t: 1 },
-			fader10: { val: 255, t: 1 },
-			fader11: { val: 0, t: 1 },
-			fader12: { val: 0, t: 1 },
-			fader13: { val: 0, t: 1 },
-		}
-	},
-	{
-		name: 'delay-in',
-		sliders: {
-			fader00: { val: 0, t: 1 },
-			fader01: { val: 255, t: 60 },
-			fader02: { val: 0, t: 1 },
-			fader03: { val: 0, t: 1 },
-		}
-	},
-	{
-		name: 'blend-in',
-		sliders: {
-			fader10: { val: 0, t: 1 },
-			fader11: { val: 0, t: 1 },
-			fader12: { val: 0, t: 1 },
-			fader13: { val: 255, t: 60 },
 		}
 	},
 	{
@@ -119,10 +43,6 @@ const presets = [
 			fader01: { val: 255, t: 1 },
 			fader02: { val: 0, t: 1 },
 			fader03: { val: 0, t: 1 },
-			fader10: { val: 0, t: 1 },
-			fader11: { val: 0, t: 1 },
-			fader12: { val: 0, t: 1 },
-			fader13: { val: 255, t: 1 },
 		}
 	},
 	{
@@ -132,10 +52,15 @@ const presets = [
 			fader01: { val: 0, t: 1 },
 			fader02: { val: 255, t: 1 },
 			fader03: { val: 0, t: 1 },
-			fader10: { val: 0, t: 1 },
-			fader11: { val: 0, t: 1 },
-			fader12: { val: 0, t: 1 },
-			fader13: { val: 255, t: 1 },
+		}
+	},
+	{
+		name: 'multi',
+		sliders: {
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 255, t: 1 },
 		}
 	},
 ];
