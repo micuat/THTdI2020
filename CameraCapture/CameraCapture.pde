@@ -83,29 +83,36 @@ void draw() {
     cam[1].read();
   }
 
-  int cx = json.getInt("cx");
-  int cy = json.getInt("cy");
-  int rw = json.getInt("w");
-  int rh = json.getInt("h");
-  int rx = cx - rw / 2;
-  int ry = cy - rh / 2;
-  camCanvas.beginDraw();
-  //camCanvas.translate(w / 2, h / 2);
-  //camCanvas.scale(1, 1 + 1.0 / 3.0);
-  //camCanvas.translate(-w / 2, -h / 2);
-  //camCanvas.image(curCam, 0, 0);
-  camCanvas.image(curCam, 0, 0, w, h, rx, ry, rw, rh);
-  camCanvas.endDraw();
-  scale(0.5, 0.5);
-  push();
-  image(curCam, 0, 0, w, h);
-  noFill();
-  stroke(255, 0, 0);
-  scale(w/1920.0, h/1080.0); // BAD!!!
-  rect(rx, ry, rw, rh);
-  pop();
-  //image(movies[0], w, 0, w, h);
-  //image(movies[1], w * 2, 0, w, h);
+  if (curCam == cam[0]) {
+    int cx = json.getInt("cx");
+    int cy = json.getInt("cy");
+    int rw = json.getInt("w");
+    int rh = json.getInt("h");
+    int rx = cx - rw / 2;
+    int ry = cy - rh / 2;
+    camCanvas.beginDraw();
+    camCanvas.image(curCam, 0, 0, w, h, rx, ry, rw+rx, rh+ry);
+    camCanvas.endDraw();
+    scale(0.5, 0.5);
+    push();
+    image(curCam, 0, 0, w, h);
+    noFill();
+    stroke(255, 0, 0);
+    strokeWeight(3);
+    scale(w/1920.0, h/1080.0); // BAD!!!
+    rect(rx, ry, rw, rh);
+    pop();
+    //image(movies[0], w, 0, w, h);
+    //image(movies[1], w * 2, 0, w, h);
+  }
+  else {
+    camCanvas.beginDraw();
+    camCanvas.translate(w/2,h/2);
+    camCanvas.scale(2,2);
+    camCanvas.translate(-w/2,-h/2);
+    camCanvas.image(curCam, 0, 0, w, h);
+    camCanvas.endDraw();
+  }
   image(camCanvas, w, 0, w, h);
   image(movies[0], w * 2, 0, w, h);
 

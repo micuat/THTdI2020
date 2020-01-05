@@ -105,6 +105,20 @@ var s = function (p) {
 
     for (let i = 0; i < 6; i++) {
       p.renderBlank(pgOutlets[i]);
+      // let pg = pgOutlets[i];
+      // pg.beginDraw();
+      // pg.background(255);
+      // for(let ii = 0; ii < 30; ii++) {
+      //   for(let jj = 0; jj < 30; jj++) {
+      //     let w = i<2?50:150;
+      //     let h = i<2?50:20;
+      //     pg.stroke(0);
+      //     pg.strokeWeight(3);
+      //     pg.noFill();
+      //     pg.rect(jj * w + ((ii%2 == 0)?0:w/2), ii * h, w, h);
+      //   }
+      // }
+      // pg.endDraw();
     }
     let pairs = [[0, 0], [1, 3], [2, 3]];
     let sequences = [
