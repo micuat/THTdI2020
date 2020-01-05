@@ -49,10 +49,8 @@ void draw() {
 
 void keyPressed() {
   for (int i = 0; i < surfaces.length; i++) {
-    if (frameCount % 120 == 0) {
-      String sendername = "Videolooper"+str(i);
-      receivers[i].createReceiver(sendername);
-    }
+    String sendername = "Videolooper"+str(i);
+    receivers[i].createReceiver(sendername);
   }
 
   switch(key) {
