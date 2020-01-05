@@ -356,6 +356,11 @@ public void readFiles(ArrayList<String> paths) throws IOException {
     println("updated at " + lastModified);
     prevModified = lastModified;
 
+    for (int i = 0; i < receivers.length; i++) {
+      String sendername = "CameraCapture"+str(i);
+      receivers[i].createReceiver(sendername);
+    }
+
     try {
       nashorn.eval("for(var prop in pApplet) {if(!this.isReservedFunction(prop)) {alternateSketch[prop] = pApplet[prop]}}");
     }
