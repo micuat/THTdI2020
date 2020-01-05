@@ -104,10 +104,10 @@ var s = function (p) {
     }
 
     p.processCamera(pgTapes[0], pgInlets[0], false);
-    p.processCamera2(pgTapes[1], pgInlets[0], false);
+    // p.processCamera2(pgTapes[1], pgInlets[0], false);
 
     p.renderVideo(pgTapes[0], pgInters[0], 'normal', 255);
-    p.renderVideo(pgTapes[1], pgInters[1], 'delay', 255);
+    p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
     p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
     p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
 
@@ -121,65 +121,86 @@ var s = function (p) {
       pgOutlets[j].endDraw();
     }
 
-    let args;
-    args = {
-      source: pgInters[0],
-      indices: [0, 1],
-      gap: 50,
-      dl: 30,
-      dr: 30,
-    }    
-    // p.renderVertical(args);
-    // p.renderHorizontal(pgInters[0], [2, 3, 4], 50, 0, 200);
-    args = {
-      source: pgInters[0],
-      indices: [2, 3],
-      gap: 50,
-      // dt: 0,
-      // db: 200,
-      x: 0, y: 0, w: width * 2, h: height * 2 / 3
-    }    
-    p.renderHorizontal(args);
-    args = {
-      source: pgInters[2],
-      indices: [2],
-      gap: 0,
-      x: 0, y: height * 2 / 3, w: width*3, h: height / 3*3
-    }
-    p.renderHorizontal(args);
-    args = {
-      source: pgInters[3],
-      indices: [3],
-      gap: 0,
-      x: 0, y: height * 2 / 3, w: width, h: height / 3
-    }
-    p.renderHorizontal(args);
-
-    for(let i = 0; i < 3; i++) {
+    let multiScreen = false;
+    if (!multiScreen) {
+      let args;
       args = {
-        source: pgInters[i],
+        source: pgInters[0],
+        indices: [0, 1],
+        gap: 50,
+        dl: 30,
+        dr: 30,
+        x: 0,
+        y: 0,
+        w: width,
+        h: height * 2
+      }
+      p.renderVertical(args);
+      args = {
+        source: pgInters[0],
+        indices: [2, 3, 4],
+        gap: 50,
+        dt: 0,
+        db: 0,//200,
+        x: 0,
+        y: 0,
+        w: width * 3,
+        h: height
+      }
+      p.renderHorizontal(args);
+    }
+    else {
+      let args;
+      args = {
+        source: pgInters[0],
+        indices: [2, 3],
+        gap: 50,
+        // dt: 0,
+        // db: 200,
+        x: 0, y: 0, w: width * 2, h: height * 2 / 3
+      }
+      p.renderHorizontal(args);
+      args = {
+        source: pgInters[2],
+        indices: [2],
+        gap: 0,
+        x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3
+      }
+      p.renderHorizontal(args);
+      args = {
+        source: pgInters[3],
+        indices: [3],
+        gap: 0,
+        x: 0, y: height * 2 / 3, w: width, h: height / 3
+      }
+      p.renderHorizontal(args);
+
+      for (let i = 0; i < 3; i++) {
+        args = {
+          source: pgInters[i],
+          indices: [4],
+          gap: 0,
+          x: 0, y: height * i / 3, w: width, h: height / 3
+        }
+        p.renderHorizontal(args);
+      }
+      args = {
+        source: pgInters[0],
         indices: [4],
         gap: 0,
-        x: 0, y: height * i / 3, w: width, h: height / 3
+        x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3
       }
-      p.renderHorizontal(args);  
-    }
-    args = {
-      source: pgInters[0],
-      indices: [4],
-      gap: 0,
-      x: 0, y: height * 2 / 3, w: width*3, h: height / 3*3
-    }
-    p.renderHorizontal(args);  
+      p.renderHorizontal(args);
 
-    for(let i = 0; i < 2; i++) {
-      args = {
-        source: pgInters[i],
-        indices: [0],
-        gap: 0,
-        x: width * i / 2, y: 0, w: width / 2, h: height
+      for (let i = 0; i < 2; i++) {
+        args = {
+          source: pgInters[i],
+          indices: [0],
+          gap: 0,
+          x: width * i / 2, y: 0, w: width / 2, h: height
+        }
+        p.renderHorizontal(args);
       }
-      p.renderHorizontal(args);  
     }
     // black
     // if (t % 60 < 30) {
@@ -342,7 +363,7 @@ var s = function (p) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
       render.translate(-width * i - gap * i + x, -dt + y);
-      render.image(source, 0, 0, w + gap * (n-1), h + (dt + db));
+      render.image(source, 0, 0, w + gap * (n - 1), h + (dt + db));
       render.endDraw();
     }
   }
@@ -361,7 +382,7 @@ var s = function (p) {
       let render = pgOutlets[indices[i]];
       render.beginDraw();
       render.translate(-dl, -height * i - gap * i);
-      render.image(source, 0, 0, width + (dl + dr), height * n + gap * (n-1));
+      render.image(source, 0, 0, width + (dl + dr), height * n + gap * (n - 1));
       render.endDraw();
     }
   }
