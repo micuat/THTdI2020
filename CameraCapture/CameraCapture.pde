@@ -10,12 +10,16 @@ import processing.video.*;
 Capture[] cam = new Capture[2];
 Capture curCam;
 
+JSONObject json;
+
 public Movie[] movies = new Movie[2];
 
 int w = 640;
 int h = 480;
 void setup() {
   size(960, 240, P3D);
+
+  json = loadJSONObject(dataPath("settings.json"));
 
   String[] cameras = Capture.list();
 
@@ -32,7 +36,7 @@ void setup() {
 
     // The camera can be initialized directly using an element
     // from the array returned by list():
-    cam[0] = new Capture(this, 720, h, "USB Capture HDMI", 60);
+    cam[0] = new Capture(this, 1920, 1080, "USB Capture HDMI", 60);
     //cam[0] = new Capture(this, w, h, "USB Capture HDMI", 60);
     cam[1] = new Capture(this, w, h, "Logitech Webcam C925e", 30);
     // Or, the settings can be defined based on the text in the list
@@ -79,16 +83,31 @@ void draw() {
     cam[1].read();
   }
 
+  int cx = json.getInt("cx");
+  int cy = json.getInt("cy");
+  int rw = json.getInt("w");
+  int rh = json.getInt("h");
+  int rx = cx - rw / 2;
+  int ry = cy - rh / 2;
   camCanvas.beginDraw();
-  camCanvas.translate(w / 2, h / 2);
-  camCanvas.scale(1, 1 + 1.0 / 3.0);
-  camCanvas.translate(-w / 2, -h / 2);
-  camCanvas.image(curCam, 0, 0);
+  //camCanvas.translate(w / 2, h / 2);
+  //camCanvas.scale(1, 1 + 1.0 / 3.0);
+  //camCanvas.translate(-w / 2, -h / 2);
+  //camCanvas.image(curCam, 0, 0);
+  camCanvas.image(curCam, 0, 0, w, h, rx, ry, rw, rh);
   camCanvas.endDraw();
   scale(0.5, 0.5);
-  image(camCanvas, 0, 0, w, h);
-  image(movies[0], w, 0, w, h);
-  image(movies[1], w * 2, 0, w, h);
+  push();
+  image(curCam, 0, 0, w, h);
+  noFill();
+  stroke(255, 0, 0);
+  scale(w/1920.0, h/1080.0); // BAD!!!
+  rect(rx, ry, rw, rh);
+  pop();
+  //image(movies[0], w, 0, w, h);
+  //image(movies[1], w * 2, 0, w, h);
+  image(camCanvas, w, 0, w, h);
+  image(movies[0], w * 2, 0, w, h);
 
   senders[0].sendTexture(camCanvas);
   //senders[1].sendTexture(movies[0]);    
@@ -96,6 +115,8 @@ void draw() {
 }
 
 void keyPressed() {
+  json = loadJSONObject(dataPath("settings.json"));
+
   if (key == '1') {
     cam[0].start();
     curCam = cam[0];
