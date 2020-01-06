@@ -103,21 +103,23 @@ var s = function (p) {
     p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
     p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       p.renderBlank(pgOutlets[i]);
-      // let pg = pgOutlets[i];
+      let pg = pgOutlets[i];
       // pg.beginDraw();
-      // pg.background(255);
-      // for(let ii = 0; ii < 30; ii++) {
-      //   for(let jj = 0; jj < 30; jj++) {
-      //     let w = i<2?50:150;
-      //     let h = i<2?50:20;
-      //     pg.stroke(0);
-      //     pg.strokeWeight(3);
-      //     pg.noFill();
-      //     pg.rect(jj * w + ((ii%2 == 0)?0:w/2), ii * h, w, h);
-      //   }
-      // }
+      // pg.colorMode(p.HSB, 255,255,255)
+      // pg.background(255 * (0.5+0.5*Math.sin(i*0.4+t)),255,255);
+      // // for(let ii = 0; ii < 30; ii++) {
+      // //   for(let jj = 0; jj < 30; jj++) {
+      // //     let w = i<2?50:150;
+      // //     let h = i<2?50:20;
+      // //     pg.stroke(0);
+      // //     pg.strokeWeight(3);
+      // //     pg.noFill();
+      // //     pg.rect(jj * w + ((ii%2 == 0)?0:w/2), ii * h, w, h);
+      // //   }
+      // // }
+      // pg.colorMode(p.RGB, 255,255,255)
       // pg.endDraw();
     }
     let pairs = [[0, 0], [1, 3], [2, 3]];
@@ -256,6 +258,7 @@ var s = function (p) {
     sequences[1](Math.sqrt(jsonUi.sliderValues.fader01 / 255) * 255);
     sequences[2](Math.sqrt(jsonUi.sliderValues.fader02 / 255) * 255);
     sequences[3](Math.sqrt(jsonUi.sliderValues.fader03 / 255) * 255);
+    p.renderBlank(pgOutlets[1]);
 
     for (let i = 0; i < pgOutlets.length; i++) {
       p.spouts[i].sendTexture(pgOutlets[i]);
