@@ -12,6 +12,7 @@ const sliderProperties = {
 	fader01: { min: 0, max: 255, default: 0 },
 	fader02: { min: 0, max: 255, default: 0 },
 	fader03: { min: 0, max: 255, default: 0 },
+	cameraBlend: { radio: ['normal', 'lightest'], default: 'normal' },
 };
 const sliderValues = {};
 for (const key in sliderProperties) {

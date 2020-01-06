@@ -86,6 +86,7 @@ var s = function (p) {
         blendTint: 0.3,
         blendMode: 'lightest',
         tUpdate: 30,
+        cameraBlend: 'normal',
       }
     }
 
@@ -95,8 +96,12 @@ var s = function (p) {
       p.receivers[i].receiveTexture(pgInlets[i]);
     }
 
-    p.processCamera(pgTapes[0], pgInlets[0], false);
-    // p.processCamera(pgTapes[1], pgInlets[0], true);
+    if (jsonUi.sliderValues.cameraBlend == 'normal') {
+      p.processCamera(pgTapes[0], pgInlets[0], false);
+    }
+    else {
+      p.processCamera(pgTapes[0], pgInlets[0], true);
+    }
 
     p.renderVideo(pgTapes[0], pgInters[0], 'normal', 255);
     p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
