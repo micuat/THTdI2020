@@ -127,8 +127,20 @@ var s = function (p) {
       // pg.colorMode(p.RGB, 255,255,255)
       // pg.endDraw();
     }
-    let pairs = [[0, 0], [1, 3], [2, 3]];
+    let pairs = [[0, 0], [0, 1], [2, 3]];
     let sequences = [
+      function (alpha) { // solo
+        let args;
+        args = {
+          source: pgInters[pairs[0][1]],
+          indices: [2, 3, 4],
+          gap: 50,
+          dt: 0, db: 0,//200,
+          x: 0, y: 0, w: width * 3, h: height,
+          alpha: alpha
+        }
+        p.renderHorizontal(args)
+      },
       function (alpha) {
         let args;
         args = {
@@ -262,10 +274,9 @@ var s = function (p) {
         // p.renderHorizontal(args);
       }
     ];
-    sequences[0](Math.sqrt(jsonUi.sliderValues.fader00 / 255) * 255);
-    sequences[1](Math.sqrt(jsonUi.sliderValues.fader01 / 255) * 255);
-    sequences[2](Math.sqrt(jsonUi.sliderValues.fader02 / 255) * 255);
-    sequences[3](Math.sqrt(jsonUi.sliderValues.fader03 / 255) * 255);
+    for(let i = 0; i < sequences.length; i++) {
+      sequences[i](Math.sqrt(jsonUi.sliderValues['fader0'+i] / 255) * 255);
+    }
     // p.renderBlank(pgOutlets[1]);
 
     for (let i = 0; i < pgOutlets.length; i++) {

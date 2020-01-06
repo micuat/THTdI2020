@@ -12,6 +12,8 @@ const sliderProperties = {
 	fader01: { min: 0, max: 255, default: 0 },
 	fader02: { min: 0, max: 255, default: 0 },
 	fader03: { min: 0, max: 255, default: 0 },
+	fader04: { min: 0, max: 255, default: 0 },
+	fader05: { min: 0, max: 255, default: 0 },
 	cameraBlend: { radio: ['normal', 'lightest'], default: 'normal' },
 };
 const sliderValues = {};
@@ -26,24 +28,41 @@ const presets = [
 			fader01: { val: 0, t: 1 },
 			fader02: { val: 0, t: 1 },
 			fader03: { val: 0, t: 1 },
+			fader04: { val: 0, t: 1 },
+			fader05: { val: 0, t: 1 },
 		}
 	},
 	{
-		name: 'real-real',
+		name: 'solo-real',
 		sliders: {
 			fader00: { val: 255, t: 1 },
 			fader01: { val: 0, t: 1 },
 			fader02: { val: 0, t: 1 },
 			fader03: { val: 0, t: 1 },
+			fader04: { val: 0, t: 1 },
+			fader05: { val: 0, t: 1 },
 		}
 	},
 	{
-		name: 'delay-blend',
+		name: 'real-real',
 		sliders: {
 			fader00: { val: 0, t: 1 },
 			fader01: { val: 255, t: 1 },
 			fader02: { val: 0, t: 1 },
 			fader03: { val: 0, t: 1 },
+			fader04: { val: 0, t: 1 },
+			fader05: { val: 0, t: 1 },
+		}
+	},
+	{
+		name: 'real-delay',
+		sliders: {
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 255, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader04: { val: 0, t: 1 },
+			fader05: { val: 0, t: 1 },
 		}
 	},
 	{
@@ -51,17 +70,32 @@ const presets = [
 		sliders: {
 			fader00: { val: 0, t: 1 },
 			fader01: { val: 0, t: 1 },
-			fader02: { val: 255, t: 1 },
-			fader03: { val: 0, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 255, t: 1 },
+			fader04: { val: 0, t: 1 },
+			fader05: { val: 0, t: 1 },
 		}
 	},
 	{
-		name: 'multi',
+		name: 'multi1',
 		sliders: {
 			fader00: { val: 0, t: 1 },
 			fader01: { val: 0, t: 1 },
 			fader02: { val: 0, t: 1 },
-			fader03: { val: 255, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader04: { val: 255, t: 1 },
+			fader05: { val: 0, t: 1 },
+		}
+	},
+	{
+		name: 'multi2',
+		sliders: {
+			fader00: { val: 0, t: 1 },
+			fader01: { val: 0, t: 1 },
+			fader02: { val: 0, t: 1 },
+			fader03: { val: 0, t: 1 },
+			fader04: { val: 0, t: 1 },
+			fader05: { val: 255, t: 1 },
 		}
 	},
 ];
