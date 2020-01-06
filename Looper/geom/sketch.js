@@ -141,7 +141,7 @@ var s = function (p) {
         }
         p.renderHorizontal(args)
       },
-      function (alpha) {
+      function (alpha) { // real
         let args;
         args = {
           source: pgInters[pairs[0][0]],
@@ -163,7 +163,7 @@ var s = function (p) {
         }
         p.renderHorizontal(args)
       },
-      function (alpha) {
+      function (alpha) { // real-delay
         let args;
         args = {
           source: pgInters[pairs[1][0]],
@@ -185,7 +185,7 @@ var s = function (p) {
         }
         p.renderHorizontal(args)
       },
-      function (alpha) {
+      function (alpha) { // fall-blend
         let args;
         args = {
           source: pgInters[pairs[2][0]],
@@ -207,7 +207,56 @@ var s = function (p) {
         }
         p.renderHorizontal(args)
       },
-      function (alpha) {
+      function (alpha) { // multi1
+        let args;
+        args = {
+          source: pgInters[0],
+          indices: [2, 3],
+          gap: 50,
+          // dt: 0, db: 200,
+          x: 0, y: 0, w: width * 2, h: height * 2 / 3,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+        args = {
+          source: pgInters[2],
+          indices: [2,3],
+          gap: 0,
+          dt: 50, db: 50,
+          x: 0, y: height * 2 / 3, w: width * 2, h: height / 3,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+        args = {
+          source: pgInters[0],
+          indices: [4],
+          gap: 0,
+          x: 0, y: height * 0 / 3, w: width, h: height / 3,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+
+        args = {
+          source: pgInters[1],
+          indices: [4],
+          gap: 0,
+          x: 0, y: height * 1 / 3, w: width, h: height / 3 * 2,
+          alpha: alpha
+        }
+        p.renderHorizontal(args);
+
+        for (let i = 0; i < 2; i++) {
+          args = {
+            source: pgInters[i],
+            indices: [0],
+            gap: 0,
+            x: width * i / 2, y: 0, w: width / 2, h: height,
+            alpha: alpha
+          }
+          p.renderHorizontal(args);
+        }
+      },
+      function (alpha) { // multi2
         let args;
         args = {
           source: pgInters[0],
@@ -222,7 +271,8 @@ var s = function (p) {
           source: pgInters[2],
           indices: [2],
           gap: 0,
-          x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
+          // x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
+          x: 0, y: height * 2 / 3, w: width, h: height / 3,
           alpha: alpha
         }
         p.renderHorizontal(args);
@@ -245,14 +295,14 @@ var s = function (p) {
           }
           p.renderHorizontal(args);
         }
-        args = {
-          source: pgInters[0],
-          indices: [4],
-          gap: 0,
-          x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
-          alpha: alpha
-        }
-        p.renderHorizontal(args);
+        // args = {
+        //   source: pgInters[0],
+        //   indices: [4],
+        //   gap: 0,
+        //   x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
+        //   alpha: alpha
+        // }
+        // p.renderHorizontal(args);
 
         for (let i = 0; i < 2; i++) {
           args = {
