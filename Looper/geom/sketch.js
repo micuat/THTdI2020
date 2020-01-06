@@ -131,7 +131,8 @@ var s = function (p) {
           indices: [0, 1],
           gap: 50,
           dl: 30, dr: 30,
-          x: 0, y: 0, w: width, h: height * 2,
+          x: 0, y: 0, w: width, h: height,
+          // x: 0, y: 0, w: width, h: height * 2,
           alpha: alpha
         }
         p.renderVertical(args);
@@ -152,7 +153,8 @@ var s = function (p) {
           indices: [0, 1],
           gap: 50,
           dl: 30, dr: 30,
-          x: 0, y: 0, w: width, h: height * 2,
+          // x: 0, y: 0, w: width, h: height * 2,
+          x: 0, y: 0, w: width, h: height,
           alpha: alpha
         }
         p.renderVertical(args);
@@ -173,7 +175,8 @@ var s = function (p) {
           indices: [0, 1],
           gap: 50,
           dl: 30, dr: 30,
-          x: 0, y: 0, w: width, h: height * 2,
+          // x: 0, y: 0, w: width, h: height * 2,
+          x: 0, y: 0, w: width, h: height,
           alpha: alpha
         }
         p.renderVertical(args);
@@ -244,21 +247,21 @@ var s = function (p) {
           }
           p.renderHorizontal(args);
         }
-        args = {
-          source: pgInters[0],
-          indices: [1],
-          gap: 0,
-          x: 0, y: 0, w: width, h: height,
-          alpha: alpha
-        }
-        p.renderHorizontal(args);
+        // args = {
+        //   source: pgInters[0],
+        //   indices: [1],
+        //   gap: 0,
+        //   x: 0, y: 0, w: width, h: height,
+        //   alpha: alpha
+        // }
+        // p.renderHorizontal(args);
       }
     ];
     sequences[0](Math.sqrt(jsonUi.sliderValues.fader00 / 255) * 255);
     sequences[1](Math.sqrt(jsonUi.sliderValues.fader01 / 255) * 255);
     sequences[2](Math.sqrt(jsonUi.sliderValues.fader02 / 255) * 255);
     sequences[3](Math.sqrt(jsonUi.sliderValues.fader03 / 255) * 255);
-    p.renderBlank(pgOutlets[1]);
+    // p.renderBlank(pgOutlets[1]);
 
     for (let i = 0; i < pgOutlets.length; i++) {
       p.spouts[i].sendTexture(pgOutlets[i]);
