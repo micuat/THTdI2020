@@ -459,7 +459,7 @@ var s = function (p) {
     let a = (args.fader/256*8) % 1;
     if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
     if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
-    let alpha = args.alpha * a;
+    let alpha = args.alpha * (args.fader == undefined ? 1:a);
     if (gap == undefined) gap = 0;
     if (dt == undefined) dt = 0;
     if (db == undefined) db = 0;
@@ -485,7 +485,7 @@ var s = function (p) {
     let a = (args.fader/256*8) % 1;
     if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
     if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
-    let alpha = args.alpha * a;
+    let alpha = args.alpha * (args.fader == undefined ? 1:a);
     if (gap == undefined) gap = 0;
     if (dl == undefined) dl = 0;
     if (dr == undefined) dr = 0;
