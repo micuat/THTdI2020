@@ -257,6 +257,8 @@ var s = function (p) {
         }
       },
       function (alpha) { // multi2
+        let count = 0;
+        let fader = jsonUi.sliderValues.lastFader;
         let args;
         args = {
           source: pgInters[0],
@@ -264,7 +266,9 @@ var s = function (p) {
           gap: 50,
           // dt: 0, db: 200,
           x: 0, y: 0, w: width * 2, h: height * 2 / 3,
-          alpha: alpha
+          alpha: alpha,
+          count: count++,
+          fader: fader
         }
         p.renderHorizontal(args);
         args = {
@@ -273,7 +277,9 @@ var s = function (p) {
           gap: 0,
           // x: 0, y: height * 2 / 3, w: width * 3, h: height / 3 * 3,
           x: 0, y: height * 2 / 3, w: width, h: height / 3,
-          alpha: alpha
+          alpha: alpha,
+          count: count++,
+          fader: fader
         }
         p.renderHorizontal(args);
         args = {
@@ -281,7 +287,9 @@ var s = function (p) {
           indices: [3],
           gap: 0,
           x: 0, y: height * 2 / 3, w: width, h: height / 3,
-          alpha: alpha
+          alpha: alpha,
+          count: count++,
+          fader: fader
         }
         p.renderHorizontal(args);
 
@@ -291,7 +299,9 @@ var s = function (p) {
             indices: [4],
             gap: 0,
             x: 0, y: height * i / 3, w: width, h: height / 3,
-            alpha: alpha
+            alpha: alpha,
+            count: count++,
+            fader: fader
           }
           p.renderHorizontal(args);
         }
@@ -310,7 +320,9 @@ var s = function (p) {
             indices: [0],
             gap: 0,
             x: width * i / 2, y: 0, w: width / 2, h: height,
-            alpha: alpha
+            alpha: alpha,
+            count: count++,
+            fader: fader
           }
           p.renderHorizontal(args);
         }
@@ -443,7 +455,11 @@ var s = function (p) {
     let dt = args.dt;
     let db = args.db;
     let x = args.x, y = args.y, w = args.w, h = args.h;
-    let alpha = args.alpha;
+    let cc = [1, 5, 4, 6, 2, 7, 0, 3];
+    let a = (args.fader/256*8) % 1;
+    if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
+    if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
+    let alpha = args.alpha * a;
     if (gap == undefined) gap = 0;
     if (dt == undefined) dt = 0;
     if (db == undefined) db = 0;
@@ -465,7 +481,11 @@ var s = function (p) {
     let dl = args.dl;
     let dr = args.dr;
     let x = args.x, y = args.y, w = args.w, h = args.h;
-    let alpha = args.alpha;
+    let cc = [1, 5, 4, 6, 2, 7, 0, 3];
+    let a = (args.fader/256*8) % 1;
+    if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
+    if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
+    let alpha = args.alpha * a;
     if (gap == undefined) gap = 0;
     if (dl == undefined) dl = 0;
     if (dr == undefined) dr = 0;
