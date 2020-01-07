@@ -3,6 +3,7 @@ import spout.*;
 int nSenders = 3;
 PGraphics camCanvas;
 Spout[] senders;
+Spout senderof;
 color[] colors;
 
 import processing.video.*;
@@ -69,6 +70,9 @@ void setup() {
     String sendername = "CameraCapture"+i;
     senders[i].createSender(sendername, w, h);
   }
+  senderof = new Spout(this);
+  senderof.createSender("of-videoin", w, h);
+
 }
 
 void movieEvent(Movie m) {
@@ -117,6 +121,7 @@ void draw() {
   image(movies[0], w * 2, 0, w, h);
 
   senders[0].sendTexture(camCanvas);
+  senderof.sendTexture(camCanvas);
   //senders[1].sendTexture(movies[0]);    
   //senders[2].sendTexture(movies[1]);
 }

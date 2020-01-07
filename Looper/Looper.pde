@@ -104,7 +104,10 @@ void setup() {
   for (int i = 0; i < receivers.length; i++) { 
     receivers[i] = new Spout(this);
     String sendername = "CameraCapture"+str(i);
-    receivers[i].createReceiver(sendername);
+    if (i==1)
+      receivers[i].createReceiver("of-videoout");
+    else
+      receivers[i].createReceiver(sendername);
   }
 
   // set the logger level to info
@@ -358,7 +361,10 @@ public void readFiles(ArrayList<String> paths) throws IOException {
 
     for (int i = 0; i < receivers.length; i++) {
       String sendername = "CameraCapture"+str(i);
-      receivers[i].createReceiver(sendername);
+      if (i==1)
+        receivers[i].createReceiver("of-videoout");
+      else
+        receivers[i].createReceiver(sendername);
     }
 
     try {

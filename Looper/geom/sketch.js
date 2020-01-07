@@ -456,7 +456,7 @@ var s = function (p) {
     let db = args.db;
     let x = args.x, y = args.y, w = args.w, h = args.h;
     let cc = [1, 5, 4, 6, 2, 7, 0, 3];
-    let a = (args.fader/256*8) % 1;
+    let a = EasingFunctions.easeInOutCubic((args.fader/256*8) % 1);
     if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
     if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
     let alpha = args.alpha * (args.fader == undefined ? 1:a);
@@ -482,7 +482,7 @@ var s = function (p) {
     let dr = args.dr;
     let x = args.x, y = args.y, w = args.w, h = args.h;
     let cc = [1, 5, 4, 6, 2, 7, 0, 3];
-    let a = (args.fader/256*8) % 1;
+    let a = EasingFunctions.easeInOutCubic((args.fader/256*8) % 1);
     if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
     if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
     let alpha = args.alpha * (args.fader == undefined ? 1:a);
