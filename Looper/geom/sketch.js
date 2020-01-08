@@ -27,7 +27,7 @@ var s = function (p) {
     startT = p.millis() * 0.001;
     font = p.createFont('Verdana', 64);
 
-    p.createCanvas(width * 2, height * 2)
+    p.createCanvas(width * 2, height * 2 * 4 / 6)
     p.frameRate(30);
     p.background(0);
 
