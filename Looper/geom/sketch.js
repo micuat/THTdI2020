@@ -104,7 +104,13 @@ var s = function (p) {
     }
 
     p.renderVideo(pgTapes[0], pgInters[0], 'normal', 255);
-    p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
+    // p.renderVideo(pgTapes[0], pgInters[1], 'delay', 255);
+    {
+      let pg = pgInters[1];
+      pg.beginDraw();
+      pg.image(pgInlets[3], 0, 0);
+      pg.endDraw();
+    }
     p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
     p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
 

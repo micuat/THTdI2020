@@ -14,6 +14,9 @@ const sliderProperties = {
 	fader03: { min: 0, max: 255, default: 0 },
 	fader04: { min: 0, max: 255, default: 0 },
 	fader05: { min: 0, max: 255, default: 0 },
+	fader21: { min: 0, max: 255, default: 0 },
+	fader22: { min: 0, max: 255, default: 0 },
+	fader23: { min: 0, max: 255, default: 0 },
 	lastFader: { min: 0, max: 255, default: 0 },
 	cameraBlend: { radio: ['normal', 'lightest'], default: 'normal' },
 };
@@ -97,6 +100,13 @@ const presets = [
 			fader03: { val: 0, t: 1 },
 			fader04: { val: 0, t: 1 },
 			fader05: { val: 255, t: 1 },
+			lastFader: { val: 255, t: 0.1 },
+		}
+	},
+	{
+		name: 'last',
+		sliders: {
+			lastFader: { val: 0, t: 30, ease: Linear.easeInOut },
 		}
 	},
 ];
