@@ -483,7 +483,7 @@ var s = function (p) {
     let dt = args.dt;
     let db = args.db;
     let x = args.x, y = args.y, w = args.w, h = args.h;
-    let cc = [1, 5, 4, 6, 2, 7, 0, 3];
+    let cc = [0, 5, 4, 6, 2, 7, 3, 1];
     let a = EasingFunctions.easeInOutCubic((args.fader / 256 * 8) % 1);
     if (cc[args.count] < Math.floor(args.fader / 256 * 8)) a = 1;
     if (cc[args.count] > Math.floor(args.fader / 256 * 8)) a = 0;
@@ -509,7 +509,7 @@ var s = function (p) {
     let dl = args.dl;
     let dr = args.dr;
     let x = args.x, y = args.y, w = args.w, h = args.h;
-    let cc = [1, 5, 4, 6, 2, 7, 0, 3];
+    let cc = [0, 5, 4, 6, 2, 7, 3, 1];
     let a = EasingFunctions.easeInOutCubic((args.fader / 256 * 8) % 1);
     if (cc[args.count] < Math.floor(args.fader / 256 * 8)) a = 1;
     if (cc[args.count] > Math.floor(args.fader / 256 * 8)) a = 0;
