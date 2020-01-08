@@ -1,12 +1,15 @@
 import spout.*;
 Spout[] receivers;
 PGraphics[] canvas;
+PGraphics[] canvasPost;
 int nReceivers = 6;
 
 import deadpixel.keystone.*;
 
 Keystone[] keystones = new Keystone[nReceivers];
 CornerPinSurface[] surfaces = new CornerPinSurface[nReceivers];
+
+PShader sh;
 
 //PGraphics offscreen;
 
@@ -16,6 +19,8 @@ void setup() {
   //size(1280, 1024, P3D);
   //surface.setResizable(true);
   fullScreen(P3D, 2);
+
+  sh = loadShader("Frag.glsl");
 
   for (int i = 0; i < keystones.length; i++) {
     keystones[i] = new Keystone(this);
@@ -33,21 +38,30 @@ void setup() {
   }
   canvas = new PGraphics[nReceivers];
   for (int i = 0; i < nReceivers; i++) {
-    canvas[i] = createGraphics(640, 480, P2D);
+    canvas[i] = createGraphics(640, 480, P3D);
+  }
+  canvasPost = new PGraphics[nReceivers];
+  for (int i = 0; i < nReceivers; i++) {
+    canvasPost[i] = createGraphics(640, 480, P3D);
   }
 }
 
 void draw() {
   blendMode(BLEND);
   background(0);
-  blendMode(ADD);
+  //blendMode(ADD);
   for (int i = 0; i < surfaces.length; i++) {
     canvas[i] = receivers[i].receiveTexture(canvas[i]);
-    surfaces[i].render(canvas[i], 0, 0, canvas[i].width, canvas[i].height);
+    canvasPost[i].beginDraw();
+    canvasPost[i].image(canvas[i], 0, 0);
+    canvasPost[i].filter(sh);
+    canvasPost[i].endDraw();
+    surfaces[i].render(canvasPost[i], 0, 0, canvas[i].width, canvas[i].height);
   }
 }
 
 void keyPressed() {
+  sh = loadShader("Frag.glsl");
   for (int i = 0; i < surfaces.length; i++) {
     String sendername = "Videolooper"+str(i);
     receivers[i].createReceiver(sendername);
