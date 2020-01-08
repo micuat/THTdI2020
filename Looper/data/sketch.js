@@ -109,9 +109,15 @@ const presets = [
 		}
 	},
 	{
-		name: 'last',
+		name: 'last7',
 		sliders: {
-			lastFader: { val: 0, t: 30, ease: Linear.easeInOut },
+			lastFader: { val: 32, t: 30, ease: Linear.easeInOut },
+		}
+	},
+	{
+		name: 'last1',
+		sliders: {
+			lastFader: { val: 0, t: 10, ease: Linear.easeInOut },
 		}
 	},
 ];
