@@ -108,41 +108,63 @@ var s = function (p) {
     {
       let pg = pgInters[1];
       pg.beginDraw();
+      pg.background(0);
+      pg.blendMode(p.LIGHTEST);
+      pg.tint(jsonUi.sliderValues.fader20);
+      pg.image(pgInlets[0], 0, 0);
+      pg.tint(jsonUi.sliderValues.fader21);
+      pg.image(pgInlets[1], 0, 0);
+      pg.tint(jsonUi.sliderValues.fader22);
+      pg.image(pgInlets[2], 0, 0);
+      pg.tint(jsonUi.sliderValues.fader23);
       pg.image(pgInlets[3], 0, 0);
+      pg.tint(255, 255);
+      pg.blendMode(p.BLEND);
       pg.endDraw();
     }
-    p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
+    {
+      let pg = pgInters[2];
+      pg.beginDraw();
+      pg.background(0);
+      pg.blendMode(p.LIGHTEST);
+      pg.tint(jsonUi.sliderValues.fader30);
+      pg.image(pgInlets[0], 0, 0);
+      pg.tint(jsonUi.sliderValues.fader31);
+      pg.image(pgInlets[1], 0, 0);
+      pg.tint(jsonUi.sliderValues.fader32);
+      pg.image(pgInlets[2], 0, 0);
+      pg.tint(jsonUi.sliderValues.fader33);
+      pg.image(pgInlets[3], 0, 0);
+      pg.tint(255, 255);
+      pg.blendMode(p.BLEND);
+      pg.endDraw();
+    }
+    // p.renderVideo(pgTapes[0], pgInters[2], 'fall', 255);
     p.renderVideo(pgTapes[0], pgInters[3], 'blendtwo', 255);
 
     for (let i = 0; i < 5; i++) {
       p.renderBlank(pgOutlets[i]);
       let pg = pgOutlets[i];
-      // pg.beginDraw();
-      // pg.colorMode(p.HSB, 255,255,255)
-      // pg.background(255 * (0.5+0.5*Math.sin(i*0.4+t)),255,255);
-      // // for(let ii = 0; ii < 30; ii++) {
-      // //   for(let jj = 0; jj < 30; jj++) {
-      // //     let w = i<2?50:150;
-      // //     let h = i<2?50:20;
-      // //     pg.stroke(0);
-      // //     pg.strokeWeight(3);
-      // //     pg.noFill();
-      // //     pg.rect(jj * w + ((ii%2 == 0)?0:w/2), ii * h, w, h);
-      // //   }
-      // // }
-      // pg.colorMode(p.RGB, 255,255,255)
-      // pg.endDraw();
     }
-    let pairs = [[0, 0], [0, 1], [2, 3]];
+    let pairs = [[0, 0], [0, 1], [2, 1]];
     let sequences = [
       function (alpha) { // solo
         let args;
         args = {
           source: pgInters[pairs[0][1]],
+          indices: [0],
+          gap: 50,
+          dt: 100, db: 100,//200,
+          x: 0, y: 0, w: width * 2, h: height,
+          alpha: alpha
+        }
+        p.renderHorizontal(args)
+        args = {
+          source: pgInters[pairs[0][1]],
           indices: [2, 3, 4],
           gap: 50,
           dt: 0, db: 0,//200,
-          x: 0, y: 0, w: width * 3, h: height,
+          x: -width * 3, y: 0, w: width * 6, h: height,
           alpha: alpha
         }
         p.renderHorizontal(args)
@@ -226,7 +248,7 @@ var s = function (p) {
         p.renderHorizontal(args);
         args = {
           source: pgInters[2],
-          indices: [2,3],
+          indices: [2, 3],
           gap: 0,
           dt: 50, db: 50,
           x: 0, y: height * 2 / 3, w: width * 2, h: height / 3,
@@ -342,8 +364,8 @@ var s = function (p) {
         // p.renderHorizontal(args);
       }
     ];
-    for(let i = 0; i < sequences.length; i++) {
-      sequences[i](Math.sqrt(jsonUi.sliderValues['fader0'+i] / 255) * 255);
+    for (let i = 0; i < sequences.length; i++) {
+      sequences[i](Math.sqrt(jsonUi.sliderValues['fader0' + i] / 255) * 255);
     }
     // p.renderBlank(pgOutlets[1]);
 
@@ -462,10 +484,10 @@ var s = function (p) {
     let db = args.db;
     let x = args.x, y = args.y, w = args.w, h = args.h;
     let cc = [1, 5, 4, 6, 2, 7, 0, 3];
-    let a = EasingFunctions.easeInOutCubic((args.fader/256*8) % 1);
-    if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
-    if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
-    let alpha = args.alpha * (args.fader == undefined ? 1:a);
+    let a = EasingFunctions.easeInOutCubic((args.fader / 256 * 8) % 1);
+    if (cc[args.count] < Math.floor(args.fader / 256 * 8)) a = 1;
+    if (cc[args.count] > Math.floor(args.fader / 256 * 8)) a = 0;
+    let alpha = args.alpha * (args.fader == undefined ? 1 : a);
     if (gap == undefined) gap = 0;
     if (dt == undefined) dt = 0;
     if (db == undefined) db = 0;
@@ -488,10 +510,10 @@ var s = function (p) {
     let dr = args.dr;
     let x = args.x, y = args.y, w = args.w, h = args.h;
     let cc = [1, 5, 4, 6, 2, 7, 0, 3];
-    let a = EasingFunctions.easeInOutCubic((args.fader/256*8) % 1);
-    if(cc[args.count] < Math.floor(args.fader/256*8)) a = 1;
-    if(cc[args.count] > Math.floor(args.fader/256*8)) a = 0;
-    let alpha = args.alpha * (args.fader == undefined ? 1:a);
+    let a = EasingFunctions.easeInOutCubic((args.fader / 256 * 8) % 1);
+    if (cc[args.count] < Math.floor(args.fader / 256 * 8)) a = 1;
+    if (cc[args.count] > Math.floor(args.fader / 256 * 8)) a = 0;
+    let alpha = args.alpha * (args.fader == undefined ? 1 : a);
     if (gap == undefined) gap = 0;
     if (dl == undefined) dl = 0;
     if (dr == undefined) dr = 0;

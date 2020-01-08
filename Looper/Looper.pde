@@ -357,7 +357,7 @@ public void readFiles(ArrayList<String> paths) throws IOException {
     prevModified = lastModified;
 
     for (int i = 0; i < receivers.length; i++) {
-      String sendername = "CameraCapture"+str(i);
+      String sendername = "of-videoout"+str(i);
       receivers[i].createReceiver(sendername);
     }
 
